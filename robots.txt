@@ -1,0 +1,8 @@
+﻿User-agent: * # будет использована всеми роботами
+Allow: /index.php
+Allow: /aids.php
+Disallow: /modvhodreg   # запрещает скачивать все, кроме страниц Allow
+Disallow: /modredpol   # запрещает скачивать все, кроме страниц Allow
+Disallow: /administratorskiy1   # запрещает скачивать все, кроме страниц Allow
+Disallow: /fotosait   # запрещает скачивать все, кроме страниц Allow
+Sitemap:  http://www.vmesteprosto.info/sitemap.xml
