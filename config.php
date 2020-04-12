@@ -1,7 +1,7 @@
 <?php
 $sdb_name = "localhost";
 $user_name = "saitznak_admin";
-$user_password = "********";
+$user_password = "*********";
 $db_name="saitznak";
 
 
