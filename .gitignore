@@ -1,0 +1,16 @@
+#Должны игнорироваться:
+#временные файлы
+~
+#графические файлы
+*.png
+*.jpg
+*.ico
+#файлы базы данных
+.sql
+#файлы с расширением min.js
+*.min.js
+#файл config в каждой папке
+config.php
+config_for_localhost.php
+config_for_server.php
+
