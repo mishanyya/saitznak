@@ -1,1 +1,0 @@
-<?php include ("../time.php");//подключить файл с функциями и постоянными переменными         ?>﻿<link rel="stylesheet" type="text/css" href="/style.css"/><form method="POST" action="adminisr.php">Логин<input type="text" name="lalall"><br/>   Пароль<input type="password" name="papapp"><br/><input type="submit"></form>

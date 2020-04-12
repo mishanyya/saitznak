@@ -1,8 +1,0 @@
-function elementlength(elem){
-var cw=elem.clientWidth;
-alert(cw);
-var ow=elem.offsetWidth;
-alert(ow);
-var l=elem.innerHTML.length;
-alert(l);
-}
