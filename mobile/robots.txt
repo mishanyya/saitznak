@@ -1,4 +1,0 @@
-﻿User-agent: Yandex # будет использована всеми роботами Яндекса
-Allow: aids.php
-Allow: index.php
-Disallow: /   # запрещает скачивать все, кроме страниц Allow
