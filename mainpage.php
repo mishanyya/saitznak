@@ -1,61 +1,73 @@
 <!DOCTYPE html>
 
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными     
-   
+<?php
+include "functions.php";//подключить файл с функциями и постоянными переменными
+
 ?>
 
 
-﻿<html>	
+﻿<html>
 <head>
-<title>	Знакомства</title>
+
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
-<script src="poiskimya.js" type="text/javascript"></script>
-<script src="ajax.js" type="text/javascript"></script>
-<script src="opisanie.js" type="text/javascript"></script>
-<script src="myslipolzovatelya.js" type="text/javascript"></script>
-<script src="neproch_soobsh.js" type="text/javascript"></script>
-<script src="izlivinput.js" type="text/javascript"></script>
-<script src="fromblack.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="/style.css"/>	
+<script src="js/ajax.js" type="text/javascript"></script>
+<script src="js/poiskimya.js" type="text/javascript"></script>
+<script src="js/opisanie.js" type="text/javascript"></script>
+<script src="js/myslipolzovatelya.js" type="text/javascript"></script>
+<script src="js/neproch_soobsh.js" type="text/javascript"></script>
+<script src="js/izlivinput.js" type="text/javascript"></script>
+<script src="js/fromblack.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+
+<meta name="Keywords" content="<?php echo $keywords; /*показать keywords для сайта*/?>"/>
+<meta name="Description" content="<?php echo $description; /*показать description для сайта*/?>"/>
+<title><?php echo $title; /*показать title*/?></title>
+
 </head>
 <body>
 
-
-<div class="column1">
-<span class='imyasayta'><?php echo IMYASAYTA; ?></span>
-<a href='index.php'><img src='<?php echo EMBLEMA; ?>' class='emblema'/></a>
-
 <?php
-session_start();//инициируем сессию   
-							//для входа если есть логин и пароль
- forenter();							
+session_start();//инициируем сессию
+/*$_SESSION['login']='123';
+$_SESSION['ip']='345';
+echo 'l='.$_SESSION['login'];
+echo '<br/>i='.$_SESSION['ip'];*/
+/*
+l=123
+i=345
+*/
+
+ forenter();//функция для разрешения входа
+
 							//удаляем логин других пользователей
-unset($_SESSION['login_q']); 
+unset($_SESSION['login_q']);
 
 							//логин и ип выводим из сессии
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
-				
-							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
-							
 
 							//внесение в онлайн
 online($login,$pdo);
 
  							//проверка на блокировку
 blocked($login,$pdo);
-							//получаем номер пользователя
+?>
+
+
+<div class="column1">
+<img src='<?php echo EMBLEMA ;?>' class='rounded mx-auto d-block emblemaindex' alt="<?php echo $alt; /*показать alt для эмблемы сайта*/?>">
+<h1 class='display-3 mx-auto  d-flex justify-content-center'><?php echo IMYASAYTA; ?></h1>
+	<?php						//получаем номер пользователя
 
 $query=$pdo->prepare("SELECT nomp FROM polzovateli WHERE loginp=? LIMIT 1");
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))
 {
-$np=$line[0]; 
+$np=$line[0];
 $_SESSION['np']=$np;
 }
 							//главное фото
@@ -87,10 +99,10 @@ $_SESSION['imya']=$imya;
 echo"<div class='block1'>";
 echo"<img  class='glavfoto' src='$glavfoto' />";
 echo"<p>Имя <span class='svoidannie'>$imya</span></p>";//имя
-echo"<p>Регион <span class='svoidannie'>$region</span></p>";//Регион 
-echo"<p>Населенный пункт <span class='svoidannie'>$gorod</span></p>";//Населенный пункт 
+echo"<p>Регион <span class='svoidannie'>$region</span></p>";//Регион
+echo"<p>Населенный пункт <span class='svoidannie'>$gorod</span></p>";//Населенный пункт
 echo"<p>Возраст <span class='svoidannie'>$vozrast</span></p>";//Возраст
-echo"<p>О себе <span class='svoidannie'>$osebe</span></p>";//о себе 
+echo"<p>О себе <span class='svoidannie'>$osebe</span></p>";//о себе
 echo"</div>";//END модуль с главным фото и личными данными
 
 							//модуль для управления профилем
@@ -107,21 +119,22 @@ echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe
 echo"</div>";
  ?>
 </div>
+
 <div class="column2">
 <?php
-							
+
 echo"<div class='neproch_soobsh'></div>";//блок непрочитанных сообщений ajax
 
 							//модуль вывода последних зарегистрировавшихся в этой группе кроме общей группы
 echo"<div class='block2'>";
   							//подсчет приславших мне приглашение дружить
-$query=$pdo->prepare("SELECT COUNT(drug) FROM druzyainet WHERE drug=? AND net='0' AND da='0'"); 
+$query=$pdo->prepare("SELECT COUNT(drug) FROM druzyainet WHERE drug=? AND net='0' AND da='0'");
 $query->execute(array($login));
 $num_row=$query->fetchColumn();
 							//если есть приславшие приглашения- вывод приглашений
 if($num_row>0){
 echo"<p>Вас приглашает в друзья:</p>";
-$query=$pdo->prepare("SELECT moy FROM druzyainet WHERE drug=? AND net='0' AND da='0' LIMIT $num_row"); 
+$query=$pdo->prepare("SELECT moy FROM druzyainet WHERE drug=? AND net='0' AND da='0' LIMIT $num_row");
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))//выводит строки пока они не кончатся в бд
 {
@@ -139,12 +152,12 @@ echo"<p><a href='vdruzya1.php?vdrugi=$l'>Дружить</a>&nbsp;<a href='vdruzy
 echo"</div>";
 echo"<div class='block2'>";
 							//вывод моей фразы
-$query=$pdo->prepare("SELECT texts FROM statusp WHERE login=? ORDER BY data DESC LIMIT 1 "); 
+$query=$pdo->prepare("SELECT texts FROM statusp WHERE login=? ORDER BY data DESC LIMIT 1 ");
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))//выводит строки пока они не кончатся в бд
 {
 echo"<p><img  class='imgmoi' src='$glavfoto' />   $line->texts</p>";
-}	
+}
 echo"</div>";
 echo"<div class='block2'>";
 							//вывод последних зарегистрировавшихся в этой группе кроме общей группы
@@ -160,7 +173,7 @@ $gorod=$line->gorod;
 $vozrast=$line->vozrast;
 $n_l= izloginanomer($loginp,$pdo);
 $fotoArray=glavfoto($loginp,$pdo);
-				
+
 echo"<p><img src='$fotoArray'  class='imgmoi'/>";
 echo"<a href='stdruga.php?id=$n_l'>$imya $vozrast $region </a></p>";
 }
@@ -168,18 +181,18 @@ echo"<a href='stdruga.php?id=$n_l'>$imya $vozrast $region </a></p>";
 echo"</div>";
 							//END модуля последних зарегистрировавшихся в этой группе кроме общей группы
 							//запросы считают и помещают всех друзей в объект $queryFriend
-$query=$pdo->prepare("SELECT COUNT(nom) FROM druzyainet WHERE (moy=? AND da='1' AND net='1') OR (drug=? AND da='1' AND net='1')"); 
+$query=$pdo->prepare("SELECT COUNT(nom) FROM druzyainet WHERE (moy=? AND da='1' AND net='1') OR (drug=? AND da='1' AND net='1')");
 $query->execute(array($login,$login));
 $friendCount=$query->fetchColumn();
 							//если существуют друзья
 if($friendCount>0){
-$queryFriend=$pdo->prepare("SELECT drug FROM druzyainet WHERE moy=? AND da='1' AND net='1' UNION SELECT moy FROM druzyainet WHERE drug=? AND da='1' AND net='1' LIMIT $friendCount"); 
+$queryFriend=$pdo->prepare("SELECT drug FROM druzyainet WHERE moy=? AND da='1' AND net='1' UNION SELECT moy FROM druzyainet WHERE drug=? AND da='1' AND net='1' LIMIT $friendCount");
 $queryFriend->execute(array($login,$login));
 while($line=$queryFriend->fetch(PDO::FETCH_LAZY)){
 $friendName=$line[0];
 							//внесение друзей в массив
 $friendList=explode(",",$friendName);
-} 				
+}
 							//из двух массивов $friendList делаем один $friendArray
 $friendArray=array_merge($friendList,$friendList);
 							//вопросительные знаки по количеству элементов массива для запроса
@@ -220,13 +233,13 @@ $ipp=$line1->ipp;
 $limitfoto=$line1->limitfoto;
 $osebe=$line1->osebe;
 $pol=$line1->pol;
-}	
+}
 $n_l= izloginanomer($line[2],$pdo);
 echo"<a href='stdruga.php?id=$n_l'>$imya</a>";
 							//вывод даты опубликования
 $dataFriend=$line[1];
-echo"<i>$dataFriend</i>"; 
- 
+echo"<i>$dataFriend</i>";
+
 echo"</div>";//END блок вывода фото или лозунга
 }
 }
@@ -320,7 +333,7 @@ while($line1=$lich->fetch(PDO::FETCH_LAZY))
 							//чтобы меня не показать
 if($friendLog!=$login){
 $imya=$line1->imya;
-$n=izloginanomer($friendLog,$pdo);             
+$n=izloginanomer($friendLog,$pdo);
 $foto=glavfoto($friendLog,$pdo);
 
 							//проверка на онлайн
@@ -353,14 +366,14 @@ while($line1=$lich->fetch(PDO::FETCH_LAZY))
 							//чтобы меня не показать
 if($friendLog!=$login){
 $imya=$line1->imya;
-$n=izloginanomer($friendLog,$pdo);             
+$n=izloginanomer($friendLog,$pdo);
 $foto=glavfoto($friendLog,$pdo);
 echo"<p><img src='$foto' class='imgmoi'/>$imya<a href='' src='$n' onclick='fromblack(this);return false;'>Возобновить общение</a></p>";
 }
 }
 }
 }
- 
+
 $query=$pdo->prepare("SELECT  COUNT(login) FROM forgostey WHERE login_q=? ORDER BY data DESC");
 $query->execute(array($login));
 $guestCount=$query->fetchColumn();
@@ -383,7 +396,7 @@ while($line1=$lich->fetch(PDO::FETCH_LAZY))
 							//чтобы меня не показать
 if($friendLog!=$login){
 $imya=$line1->imya;
-$n=izloginanomer($friendLog,$pdo);             
+$n=izloginanomer($friendLog,$pdo);
 $foto=glavfoto($friendLog,$pdo);
 echo"<p><img src='$foto' class='imgmoi'/><a href='stdruga.php?id=$n'>$imya</a></p>";
 }

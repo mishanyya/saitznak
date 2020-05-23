@@ -27,7 +27,7 @@ $metkap=$_SESSION['metkap'];//моя группа
 
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 $anketa=$pdo->prepare("SELECT obrazovanie,zanyatiya,prozhivanie,deti,uvlechenie,privichki,dopolnitelno FROM anketa WHERE loginp=? LIMIT 1");
 $anketa->execute(array($login));

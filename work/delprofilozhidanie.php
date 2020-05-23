@@ -40,7 +40,7 @@ $ip=htmlspecialchars($ip);//переводит некоторые спецсим
 $ip=mysql_real_escape_string($ip);//экранирует символы кроме % и _ 
 
 //функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 
 

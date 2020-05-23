@@ -1,8 +1,8 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include ("../time.php");//подключить файл с функциями и постоянными переменными
 
-						  
-session_start();//инициируем сессию   
+
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
  forenter();
 
@@ -15,10 +15,6 @@ $ip=htmlspecialchars($ip);//переводит некоторые спецсим
 
 $metkap=$_SESSION['metkap'];//моя группа
 
-
-
-							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
 
 if(isset($_POST['obrazovanie'])){$obrazovanie=$_POST['obrazovanie'];}
 if(isset($_POST['zanyatiya'])){$zanyatiya=$_POST['zanyatiya'];}

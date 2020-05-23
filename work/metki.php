@@ -29,7 +29,7 @@ $ip=htmlspecialchars($ip);
 
 
 							//функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 							//поиск в БД - есть ли мой логин
 $query=$pdo->prepare("SELECT COUNT(loginp) FROM metki WHERE loginp=?");

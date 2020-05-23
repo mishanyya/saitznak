@@ -54,7 +54,7 @@ echo"<img src='$glavfoto' class='glavfoto'/>";
 										
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);		
+($login,$ip,$pdo);		
 
 							//проверка на блокировку
 blocked($login,$pdo);					

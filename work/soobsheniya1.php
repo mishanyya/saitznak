@@ -20,7 +20,7 @@ $imya=htmlspecialchars($imya);
 
 				
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);							
+($login,$ip,$pdo);							
     
 							//если получено GET pn - при переходе с soobsheniya.php при выборе другого адресата
 if(isset($_GET['pn']))  

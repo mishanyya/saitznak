@@ -16,7 +16,7 @@ $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
  
 //Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 
 $imya=$_GET['imya']; 

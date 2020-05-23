@@ -3,6 +3,7 @@
 include "config.php";//присоединить файл для подключения к серверу
 include "pdo.php";//присоединить файл для создания объекта PDO
 
+//логин mishanyakashin , пароль 10132031 для входа при тестировании
 
 //описание переменных, после их надо будет подключить к БД
 $title="Title";
@@ -22,8 +23,62 @@ $imyasayta=$_SERVER['SERVER_NAME'];
 define('IMYASAYTA','&laquo;'.$imyasayta.'&raquo;');//адрес сайта
 define('HEADLINE','&laquo;Вместе просто онлайн&raquo;');//название сайта
 
+// в случае ошибки SQL выражения выведет сообщение об ошибке,
+//на рабочем сервере-отключено!!!
+$error_array = $pdo->errorInfo();
 
 //////////////////////////////////////////////////////////
+//функция внесения посетителя online НАДО ДОРАБОТАТЬ!
+//online	по умолчанию 0, т.е. не онлайн. Если онлайн, то 1
+function online($login,$pdo)
+{
+$id_session = session_id();//внесение в переменную номера сессии
+
+                          //Будем считать, что пользователи, которые отсутствовали  в течении 10 минут - покинули ресурс - удаляем их
+$online=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login'");
+$online_count=$online->fetchColumn();
+  if($online_count>0)
+ {
+ $query=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login' AND idsession = '$id_session'");
+$query_count=$query->fetchColumn();
+  if($query_count>0) //значит посетитель online
+{
+$query=$pdo->exec("UPDATE online SET vremya = NOW(),idsession = '$id_session' WHERE login='$login'");
+}
+ }
+  // Иначе - посетитель только что вошёл - помещаем в таблицу нового посетителя
+ else {
+$query=$pdo->exec("INSERT INTO online (login,idsession,vremya) VALUES('$login','$id_session',NOW())");
+}
+$query=$pdo->exec("DELETE FROM online  WHERE vremya < NOW() -  INTERVAL '10' MINUTE");
+
+}
+
+//Функция проверки посетителя на онлайн НАДО ДОРАБОТАТЬ!
+function isonline($login_q,$pdo){
+$isonline =$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login_q'");
+$isonline_num=$isonline->fetchColumn();
+  if($isonline_num>0) return 'online';
+}
+
+/*пока отменяем верификацию, она будет по желанию!
+
+							//адрес кому отправляется письмо
+$address=base64_decode($login);
+$sub="vmesteprosto.info Регистрация";
+
+$mes="Пройдите пожалуйста по ссылке для регистрации http://vmesteprosto.info/modvhodreg/redaktpar1.php?a=$login&b=$vremen  \r\n";
+//$from - смотреть в config.php
+							//отправка сообщения
+
+mail($address,$sub,$mes,$from);
+*/
+													//обновление временного пароля у логина
+
+//$_SESSION['login']=$login;
+//echo "Сообщение  отправлено!<br/>Сообщение  придет в течение некоторого времени, в зависимости от загрузки сети,также оно может находиться в папке 'Спам'<br/>Если не пришло отправьте его <a href='registr.php'>еще раз</a> или  <a href='mailto:admin@vmesteprosto.info'>нажмите на ссылку для отправки нам сообщения и Вас зарегистрируют в ближайщее время</a>";
+/////////////
+
 
 $today = date("Y-m-d H:i:s");//время в формате mysql
 $segodnya = date("Y-m-d");//сегодняшний день
@@ -55,7 +110,8 @@ return $vozrast;
 //функция для разрешения входа
 function forenter(){
 if(!isset($_SESSION['login'])||(!isset($_SESSION['ip'])))
-{exit("Пройдите пожалуйста для входа на сайт по ссылке <a href='/index.php'>по ссылке</a>");}
+{
+  exit("Пройдите пожалуйста для входа на сайт по этой <a href='/index.php'>Ссылке</a>");}
 }
 
 //функция получения данных по логину/modredpol/index.php
@@ -68,13 +124,18 @@ return $lich;//объект с личными данными
 //проверяется на блокировку администратором
 function blocked($login,$pdo)
 {
-$select = $pdo->query("SELECT COUNT(login) FROM adminblockedlog WHERE login='$login'"); //выполнение запроса вывод количества строк pdo
-$skoka=$select->fetchColumn();                                                     //количество строк блокированно   $skoka
-if($skoka>0)
+$query = $pdo->prepare("SELECT blocked FROM adminblockedlog WHERE login=? LIMIT 1"); //выполнение запроса вывод количества строк pdo
+$query->execute(array($login));
+$blocked=$query->fetch(PDO::FETCH_LAZY);
+$qwerty=$blocked[0];
+if($qwerty==1)
 {
-return exit("Ваша страница временно закрыта в связи с многочисленными жалобами.После быстрой проверки Вам будет открыт доступ к вашей странице<a href='/index.php'>Далее</a> Просим обратиться на адрес  admin@vmesteprosto.info");
+return exit("Ваша страница временно закрыта в связи с многочисленными жалобами. После быстрой проверки вопрос будет решен в ближайшее время!");
 }
 }
+
+
+
 
 //подтвержден ли логин если "0" то не подтвержден, если "1" то подтвержден
 function confirmedLogin($login,$pdo){
@@ -82,18 +143,6 @@ $query=$pdo->prepare("SELECT COUNT(proveren) FROM polzovateli WHERE loginp=? AND
 $query->execute(array($login));
 $skolka=$query->fetchColumn();
 if($skolka>0){echo"Отправьте сообщение 'reg' со своей электронной почты на admin@vmesteprosto.info для возможности обратной связи с Вами";}
-}
-
-
-// в случае ошибки SQL выражения выведет сообщение об ошибке
-//$error_array = $pdo->errorInfo();
-
-//Функция при открытии проверяет наличие логина и совпадение парол и логина
-function provlogparip($login,$ip,$pdo)
-{
-$kolv=$pdo->query("SELECT COUNT(loginp) FROM lichnoe WHERE loginp='$login' AND ipp='$ip'");
-$kolv_num=$kolv->fetchColumn();
-if($kolv_num=='0'){return exit("Попробуйте&nbsp;<a href='/index.php'>войти снова</a>");}
 }
 
 
@@ -118,38 +167,7 @@ return $foto;
  }}//если существует файл
 else {return $netfoto; }
 }
-//НАДО ДОРАБОТАТЬ!!!
-//функция проверки и внесения посетителя online или нет
-//online	по умолчанию 0, т.е. не онлайн. Если онлайн, то 1
-function online($login,$pdo)
-{
-$id_session = session_id();
-                          //Будем считать, что пользователи, которые отсутствовали  в течении 10 минут - покинули ресурс - удаляем их
-$online=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login'");
-$online_count=$online->fetchColumn();
-  if($online_count>0)
- {
- $query=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login' AND idsession = '$id_session'");
-$query_count=$query->fetchColumn();
-  if($query_count>0) //значит посетитель online
-{
-$query=$pdo->exec("UPDATE online SET vremya = NOW(),idsession = '$id_session' WHERE login='$login'");
-}
- }
-  // Иначе - посетитель только что вошёл - помещаем в таблицу нового посетителя
- else {
-$query=$pdo->exec("INSERT INTO online (login,idsession,vremya) VALUES('$login','$id_session',NOW())");
-}
-$query=$pdo->exec("DELETE FROM online  WHERE vremya < NOW() -  INTERVAL '10' MINUTE");
 
-}
-
-//Функция проверки посетителя на онлайн
-function isonline($login_q,$pdo){
-$isonline =$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login_q'");
-$isonline_num=$isonline->fetchColumn();
-  if($isonline_num>0) return 'online';
-}
 
 //Функция поиска по логину номера из табл регистр с дополнит шифрованием
 function izloginanomer($login,$pdo){
@@ -233,40 +251,80 @@ $query->execute(array($login,$login_q));
 }
 
 
-//Функция попытка_ввести_данные_$kol_раза
-function threetimes($login,$parol,$pdo)
-{
-							//проверяет логин на существование
-$query=$pdo->prepare("SELECT COUNT(loginr) FROM threetimesblock WHERE loginr=? LIMIT 1");
-$query->execute(array($login));
-$loginCount=$query->fetchColumn();
-							//если такой логин есть
-if(($loginCount>0))
-{
-							//берем количество попыток
-$query=$pdo->prepare("SELECT times FROM threetimesblock WHERE loginr=? LIMIT 1");
-$query->execute(array($login));
-$falseCount=$query->fetch(PDO::FETCH_LAZY);
-$Count=$falseCount[0]+1;
-							//увеличиваем его на 1 и обновляем БД
-$query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=? WHERE loginr=?");
-$query->execute(array($Count,$login));
 
-if($Count>2)
+
+
+
+
+//Функция проверки введенных логина и пароля при входе на сайт
+//Каждая попытка входа должна запоминать IP и время!
+function threetimesenter($login,$parol,$pdo)
 {
-exit("Вы превысили число попыток ввода- следующая попытка возможна через 5 минут <a href='/index.php'>дальше</a>");
-}
-}
-							//если такого логина нет
+							//логин уже проверен на существование в самом коде для входа
+							//берем из БД кол-во запросов и разницу во времени для пользователя
+$query=$pdo->prepare("SELECT times,TIMESTAMPDIFF(MINUTE, timer, NOW()) FROM threetimesblock WHERE loginp=?");
+
+
+$query->execute(array(/*$times,*/$login));
+$timesarray=$query->fetch(PDO::FETCH_LAZY);
+$times=$timesarray[0];//количество попыток из БД
+$period=$timesarray[1];//период с последнего ввода
+
+//echo 'times:'.$times.'<br/>';
+//echo 'count:'.$period.'<br/>';
+if($times>2){
+  //считаем разницу в минутах
+if($period<=15){
+  //если прошло 15 минут и меньше
+exit("Вы превысили число попыток ввода- следующая попытка возможна через 15 минут <a href='/index.php'>Дальше</a>");
+  //блокируется ввод пароля, даже если он правильный
+}}
 else{
-$ip=$_SERVER['REMOTE_ADDR'];
-$query=$pdo->prepare("INSERT INTO threetimesblock (nomer,loginr,ip,timer,parol,times)VALUES(NULL,?,?,NOW(),?,'0')");
-$query->execute(array($login,$ip,$parol));
+  //увеличивается счетчик на 1
+  $times++;
+  $query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=? WHERE loginp=?");
+  $query->execute(array($times,$login));
+  //проверяется пароль
 }
 
-
-//SELECT times FROM threetimesblock WHERE loginr=? AND (timer BETWEEN (NOW()-INTERVAL '5' M
+//извлекаем пароль из БД
+$query=$pdo->prepare("SELECT parp FROM polzovateli WHERE loginp=? LIMIT 1");
+$query->execute(array($login));
+while($line=$query->fetch(PDO::FETCH_LAZY))
+{
+$parolfrom=$line[0];
 }
+
+//сравниваем пароли
+if (hash_equals($parolfrom, crypt($parol, $parolfrom))) {
+//если логин и пароль совпали
+//если вход удачен, то обнуляем счетчик попыток
+$query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=0 WHERE loginp=?");
+$query->execute(array($login));
+
+//ip пользователя
+$ip = $_SERVER['REMOTE_ADDR'];
+//обновляется ip в БД
+$query=$pdo->prepare("UPDATE lichnoe SET ipp=? WHERE loginp=?");
+$query->execute(array($ip,$login));
+//создается сессия IP
+$_SESSION['ip']=$ip;
+//создается сессия логина
+$_SESSION['login']=$login;
+
+//вносим IP каждого входа и дату в таблицу
+
+$query=$pdo->prepare("INSERT INTO forIP (login,ip) VALUES (?,?)");
+$query->execute(array($login,$ip));
+
+//переход на страницу пользователя
+header("location:/mainpage.php");
+}
+else{
+  exit("Пароль НЕ верен! <a href='/index.php'>Повторите попытку!</a>");
+}
+}//конец функции
+
 ?>
 <!--подключение стилей с сайта Bootstrap-->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">

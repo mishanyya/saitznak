@@ -41,7 +41,7 @@ $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
 			
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 $metkap=$_SESSION['metkap'];   //метка пользователя входит в переменную 
 

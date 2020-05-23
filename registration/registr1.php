@@ -7,14 +7,6 @@ $ip = $_SERVER['REMOTE_ADDR'];
 session_start();//открыть сессию
 $id_session = session_id();//коэффициент сессии
 
-?>
-<script src="ajax.js"></script>
-<script src="podschet.js"></script>
-
-﻿<link rel="stylesheet" type="text/css" href="/style.css"/>
-
-<?php
-
 
                                              //модуль согласия с правилами сайта
 if(!isset($_POST['text1'])){
@@ -84,37 +76,55 @@ $query->execute(array($login,$id_session));//+
 
 
 
-/*пока отменяем верификацию, она будет по желанию!
 
-							//адрес кому отправляется письмо
-$address=base64_decode($login);
-$sub="vmesteprosto.info Регистрация";
-
-$mes="Пройдите пожалуйста по ссылке для регистрации http://vmesteprosto.info/modvhodreg/redaktpar1.php?a=$login&b=$vremen  \r\n";
-//$from - смотреть в config.php
-							//отправка сообщения
-
-mail($address,$sub,$mes,$from);
-*/
-													//обновление временного пароля у логина
-
-//$_SESSION['login']=$login;
-//echo "Сообщение  отправлено!<br/>Сообщение  придет в течение некоторого времени, в зависимости от загрузки сети,также оно может находиться в папке 'Спам'<br/>Если не пришло отправьте его <a href='registr.php'>еще раз</a> или  <a href='mailto:admin@vmesteprosto.info'>нажмите на ссылку для отправки нам сообщения и Вас зарегистрируют в ближайщее время</a>";
 ?>
-<form  action="registr2.php"  method="post">
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="Keywords" content="<?php echo $keywords; /*показать keywords для сайта*/?>"/>
+  <meta name="Description" content="<?php echo $description; /*показать description для сайта*/?>"/>
+  <title><?php echo $title; /*показать title*/?></title>
 
-Создайте новый пароль
-<input type="password" required  value="" name="parol" id="parol"  onkeyup="podschet()"><i id="par"></i>
-
-Введите пароль повторно
-<input type="password" required value="" name="parol1" id="parol1" onkeyup="sravnitdlinupar()"><i id="par1"></i>
 
 
+
+
+  <script src="js/ajax.js"></script>
+  <script src="js/opisanie.js"></script>
+  <script src="js/podschet.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+<link href='https://fonts.googleapis.com/css?family=Rubik+Mono+One|Yeseva+One|Prosto+One|Press+Start+2P|Playfair+Display+SC|Marck+Script|Bad+Script|Comfortaa&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+</head>
+<body onload="islatinfont(id)">
+<div>
+  <img src='<?php echo EMBLEMA ;?>' class='rounded mx-auto d-block emblemaindex' alt="<?php echo $alt; /*показать alt для эмблемы сайта*/?>">
+  <h1 class='display-3 mx-auto  d-flex justify-content-center'><?php echo IMYASAYTA; ?></h1>
+
+
+<form action="registr2.php" method="POST" class='vhod'>
+
+
+<p class="h4 text-primary">Создайте новый пароль:</p>
+<input type="text" required  value="" name="parol" id="parol"  onkeyup="podschet()">
+<p><i id="par"></i></p>
+<p class="h4 text-primary">Введите пароль повторно:</p>
+<input type="password" required value="" name="parol1" id="parol1" onkeyup="sravnitdlinupar()">
+<p><i id="par1"></i></p>
 <input type="hidden" name="login" value="<?php echo "$login"; ?>">
-
 <input  type="submit"  value="Зарегистрироваться" name="reg" ><br/>
 
- </form>
+</form>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
 <?php
 
 

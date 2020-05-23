@@ -13,7 +13,7 @@ $login=htmlspecialchars($login);
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
 							//функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 $text=$_POST['text'];
 $text=htmlspecialchars($text);

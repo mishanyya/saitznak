@@ -13,12 +13,12 @@ $login=htmlspecialchars($login);
 $parol = $_POST['parol'];
 $parol=trim($parol);
 $parol=htmlspecialchars($parol);
-//$parol=sha1($parol);//зашифровка пароля
+
 
 $parol1 = $_POST['parol1'];
 $parol1=trim($parol1);
 $parol1=htmlspecialchars($parol1);
-//$parol1=sha1($parol1);//зашифровка пароля
+
 
 							//сравнение паролей
 if($parol!=$parol1){

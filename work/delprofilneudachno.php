@@ -1,9 +1,9 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include ("../time.php");//подключить файл с функциями и постоянными переменными
 ?>
 
 
-﻿<html>	
+﻿<html>
 <head>
 <title>	Знакомства</title>
 <script src="poiskimya.js" type="text/javascript"></script>
@@ -14,7 +14,7 @@ include ("../time.php");//подключить файл с функциями и
 
 <script src="izlivinput.js" type="text/javascript"></script>
 
-<link rel="stylesheet" type="text/css" href="style.css"/>	
+<link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 	<body>
 
@@ -24,7 +24,7 @@ include ("../time.php");//подключить файл с функциями и
 <i style='color:blue;'>&alpha;</i>-версия сайта<br/><br/>
 <a href='index.php'><img src='/fotosait/VP.png' class='emblema'/></a>
 <?php
-session_start();//инициируем сессию   
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
  forenter();
 
@@ -32,15 +32,11 @@ session_start();//инициируем сессию
 
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);//переводит некоторые спецсимволы, которые могут использоваться для кода в другое обозначение
-$login=mysql_real_escape_string($login);//экранирует символы кроме % и _ 
+$login=mysql_real_escape_string($login);//экранирует символы кроме % и _
 
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);//переводит некоторые спецсимволы, которые могут использоваться для кода в другое обозначение
-$ip=mysql_real_escape_string($ip);//экранирует символы кроме % и _ 
-
-//функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
-
+$ip=mysql_real_escape_string($ip);//экранирует символы кроме % и _
 
 
 ?>

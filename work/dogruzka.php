@@ -49,7 +49,7 @@ $osebe_q=$line->osebe;
 								
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);					
+($login,$ip,$pdo);					
  
 $skolko=$_GET['skolko'];
 $skolko=htmlspecialchars($skolko);//переводит некоторые спецсимволы, которые могут использоваться для кода в другое обозначение

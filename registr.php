@@ -1,5 +1,9 @@
 <?php
 include ("functions.php");//подключить файл с функциями и постоянными переменными
+
+session_start();//открыть сессию
+//удаляем логин этого пользователя
+unset($_SESSION['login']);
 ?>
 <!DOCTYPE html>
 <html>
@@ -8,6 +12,7 @@ include ("functions.php");//подключить файл с функциями 
 
 <script src="js/ajax.js"></script>
 <script src="js/opisanie.js"></script>
+<script src="js/podschet.js"></script>
 <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <link href='https://fonts.googleapis.com/css?family=Rubik+Mono+One|Yeseva+One|Prosto+One|Press+Start+2P|Playfair+Display+SC|Marck+Script|Bad+Script|Comfortaa&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 </head>
@@ -21,6 +26,11 @@ include ("functions.php");//подключить файл с функциями 
 
 
 <form action="/<?php echo $regcatalog; ?>/registr1.php" method="POST"  class="vhod"/>
+
+  <input type="text" maxlength='40' size='40' id="inner" onkeyup="islatinfont()"/>
+<p id="conclude"></p>
+<p id="conclude1"></p>
+
 <p class="h4 text-primary">Для регистрации на сайте:</p>
 <p class="h4 text-primary">Введите Логин:</p>
 <i>Внимание: Логин можно указать любой, кроме существующих,

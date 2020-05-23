@@ -1,6 +1,6 @@
 ﻿//подсчет символов в строке ввода
 
-function podschet() {       
+function podschet() {
 
 
     var statusElem = document.getElementById('par');
@@ -44,6 +44,28 @@ par1.innerHTML="Длины паролей не совпадают";
 par1.style.color="red";
 parol1.style.color="red";
 }
+}
 
 
+
+
+//проверяет содержание только латинских букв и знаков @_-.
+function islatinfont(){
+  var inner = document.getElementById('inner').value;
+  document.getElementById('conclude').innerHTML=inner;
+  document.getElementById('conclude1').innerHTML='нормальный символ';
+  /*
+
+ var parol = document.getElementById('conclude');
+
+var dlina=statusElem.innerHTML.length;
+
+if(dlina<8){parol.style.color="red";
+par.innerHTML="Создавайте пароль длиной не меньше 8 символов";
+par.style.color="red";
+}
+else if(dlina>=8){parol.style.color="green";
+par.innerHTML="Хороший пароль";
+par.style.color="green";
+}*/
 }

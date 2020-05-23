@@ -1,41 +1,38 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include ("../time.php");//подключить файл с функциями и постоянными переменными
 ?>
 
 
 <?php
 
 
-session_start();//инициируем сессию   
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
- forenter();						
+ forenter();
 							//логин и ип выводим из сессии
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
 
-$login_q=$_SESSION['login_q'];				
+$login_q=$_SESSION['login_q'];
 $login_q=htmlspecialchars($login_q);
 
-$imya=$_SESSION['imya'];				
+$imya=$_SESSION['imya'];
 $imya=htmlspecialchars($imya);
 
 $glavfoto=$_SESSION['glavfoto'];
 $glavfoto=htmlspecialchars($glavfoto);
 
+					
 
-
-							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);							
-						
 							//начало блока если есть адресат login_q
 if(isset($login_q)){
 
 $glavfoto_q=$_SESSION['glavfoto_q'];
 $glavfoto_q=htmlspecialchars($glavfoto_q);
 
-//выводим данные адресата 
+//выводим данные адресата
 $lich=dataFromLogin($login_q,$pdo);
 while($line=$lich->fetch(PDO::FETCH_LAZY))
 {
@@ -97,5 +94,3 @@ echo"</p>";
 }
 }
 }							//конец блока если есть адресат login_q
-
-

@@ -42,7 +42,7 @@ $metkap=$_SESSION['metkap'];//моя группа
 
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 if(!isset($metkapol)){$metkapol='';}
 

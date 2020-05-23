@@ -18,6 +18,7 @@ header("location:mainpage.php");
 
   <script src="js/ajax.js"></script>
   <script src="js/opisanie.js"></script>
+  <script src="js/podschet.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <link href='https://fonts.googleapis.com/css?family=Rubik+Mono+One|Yeseva+One|Prosto+One|Press+Start+2P|Playfair+Display+SC|Marck+Script|Bad+Script|Comfortaa&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 </head>

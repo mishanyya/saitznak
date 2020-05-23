@@ -1,9 +1,9 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include ("../time.php");//подключить файл с функциями и постоянными переменными
 ?>
 
 
-﻿<html>	
+﻿<html>
 <head>
 <title>	Знакомства</title>
 <script src="poiskimya.js" type="text/javascript"></script>
@@ -14,14 +14,14 @@ include ("../time.php");//подключить файл с функциями и
 
 <script src="izlivinput.js" type="text/javascript"></script>
 
-<link rel="stylesheet" type="text/css" href="style.css"/>	
+<link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 	<body>
 
 <i style='color:blue;'>&alpha;</i>-версия сайта<br/><br/>
 <a href='index.php'><img src='/modredpol/fotosait/VP.png' class='emblema'/></a>
 <?php
-session_start();//инициируем сессию   
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
  forenter();
 
@@ -33,13 +33,10 @@ $login=htmlspecialchars($login);//переводит некоторые спец
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);//переводит некоторые спецсимволы, которые могут использоваться для кода в другое обозначение
 
-//функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
-
 
 ?>
 
-Вы точно хотите удалить свой аккаунт,может останетесь?Если Вы точно решили удалиться , то ставим Вас в известность, что услуга платная и ее стоимость составляет 50 российских рублей без учета 
+Вы точно хотите удалить свой аккаунт,может останетесь?Если Вы точно решили удалиться , то ставим Вас в известность, что услуга платная и ее стоимость составляет 50 российских рублей без учета
 комиссий платежной системы и ее партнеров.
 
 <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">

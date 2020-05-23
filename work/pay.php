@@ -41,7 +41,7 @@ $imya=$_SESSION['imya'];
 $imya=htmlspecialchars($imya);
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-provlogparip($login,$ip,$pdo);
+($login,$ip,$pdo);
 
 
 $pol=$_SESSION['pol'];
