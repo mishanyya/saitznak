@@ -52,20 +52,25 @@ parol1.style.color="red";
 //проверяет содержание только латинских букв и знаков @_-.
 function islatinfont(){
   var inner = document.getElementById('inner').value;
-  document.getElementById('conclude').innerHTML=inner;
-  document.getElementById('conclude1').innerHTML='нормальный символ';
-  /*
+  let regexp = /^([a-zA-Z0-9\-\_\.]+\@[a-z]+\.[a-z]+)/;
 
- var parol = document.getElementById('conclude');
+//let- объявление переменной, ее видно только внутри {}
+//test- поиск совпадений, покажет true или false
 
-var dlina=statusElem.innerHTML.length;
-
-if(dlina<8){parol.style.color="red";
-par.innerHTML="Создавайте пароль длиной не меньше 8 символов";
-par.style.color="red";
+//проверка вводимых символов
+let regexperr = /[^\@\_\-\.a-zA-Z0-9]/;
+if(regexperr.test(inner)==true){
+alert('Вы ввели что-то не то!');
 }
-else if(dlina>=8){parol.style.color="green";
-par.innerHTML="Хороший пароль";
-par.style.color="green";
-}*/
+
+
+
+//отмечается, если введен email
+if(regexp.test(inner)==true){
+  document.getElementsByName('ifemail')[0].checked=true;
+}
+else{
+  document.getElementsByName('ifemail')[0].checked=false;
+}
+
 }

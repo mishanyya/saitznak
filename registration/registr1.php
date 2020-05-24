@@ -11,7 +11,14 @@ $id_session = session_id();//коэффициент сессии
                                              //модуль согласия с правилами сайта
 if(!isset($_POST['text1'])){
 exit("Вы не подтвердили согласие с правилами использования сайта! <a href='/registr.php'>Вернуться</a>");
+}
 
+//если для регистрации используется email
+if(isset($_POST['ifemail'])){
+$email='1';
+}
+else{
+  $email='0';
 }
 /*else{
 $text1 = $_POST['text1'];
@@ -47,33 +54,33 @@ $vremen=rand();//на случай подтверждения логина - э�
               //этот код работает
 
 //ввод нового логина сразу в несколько основных таблиц в БД
-$query=$pdo->prepare("INSERT INTO polzovateli (loginp,parp,vrepar,timeregistr) VALUES (?,'не задано',?,NOW())");
-$query->execute(array($login,$vremen));//+
-
+$query=$pdo->prepare("INSERT INTO polzovateli (loginp,parp,vrepar,timeregistr,proveren) VALUES (?,'не задано',?,NOW(),?)");
+$query->execute(array($login,$vremen,$email));//+
+//echo "1";
 $query=$pdo->prepare("INSERT INTO anketa (loginp) VALUES (?)");
 $query->execute(array($login));//+
-
+//echo "2";
 $query=$pdo->prepare("INSERT INTO lichnoe (loginp,datarozd,ipp) VALUES (?,CURRENT_DATE(),?)");
 $query->execute(array($login,$ip));//+
-
+//echo "3";
 $query=$pdo->prepare("INSERT INTO adminblockedlog (login) VALUES (?)");
 $query->execute(array($login));//+
-
+//echo "4";
 $query=$pdo->prepare("INSERT INTO finansy (loginp) VALUES (?)");
 $query->execute(array($login));//+
-
+//echo "5";
 $query=$pdo->prepare("INSERT INTO statusp (loginp,data) VALUES (?,NOW())");
 $query->execute(array($login));//+
-
+//echo "6";
 $query=$pdo->prepare("INSERT INTO metki (loginp) VALUES (?)");
 $query->execute(array($login));//+
-
-$query=$pdo->prepare("INSERT INTO threetimesblock (loginp,ip,timer) VALUES (?,?,NOW())");
-$query->execute(array($login,$ip));//+
-
+//echo "7";
+$query=$pdo->prepare("INSERT INTO threetimesblock (loginp,timer) VALUES (?,NOW())");
+$query->execute(array($login));//+
+//echo "8";
 $query=$pdo->prepare("INSERT INTO online (loginp,idsession) VALUES (?,?)");
 $query->execute(array($login,$id_session));//+
-
+//echo "9";
 
 
 

@@ -107,7 +107,7 @@ if($seyden>$d){$vozrast=$vozrast;}
 return $vozrast;
 }
 
-//функция для разрешения входа
+//функция для разрешения входа, НАДО ДОРАБОТАТЬ!!!Добавить section_id()!!!
 function forenter(){
 if(!isset($_SESSION['login'])||(!isset($_SESSION['ip'])))
 {

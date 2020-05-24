@@ -27,16 +27,12 @@ unset($_SESSION['login']);
 
 <form action="/<?php echo $regcatalog; ?>/registr1.php" method="POST"  class="vhod"/>
 
-  <input type="text" maxlength='40' size='40' id="inner" onkeyup="islatinfont()"/>
-<p id="conclude"></p>
-<p id="conclude1"></p>
+<p class="h4 text-primary">Для регистрации на сайте рекомендуется вводить логин или адрес электронной почты, в виде цифр, символов латинского алфавита и знаков -_.@</p>
 
-<p class="h4 text-primary">Для регистрации на сайте:</p>
-<p class="h4 text-primary">Введите Логин:</p>
-<i>Внимание: Логин можно указать любой, кроме существующих,
-  но, при необходимости, восстановление доступа к личному кабинету
-  будет возможно только при указании подтвержденного корректного адреса электронной почты</i>
-<input type="text" required name='login' maxlength='40' size='40'/>
+
+<input type="text" required name='login' maxlength='40' size='40' id="inner" onkeyup="islatinfont()"/>
+<p class="h4 text-primary">У вас появилась возможность подтвердить свой e-mail</p>
+<input type="checkbox"  name='ifemail'/>
 <p class="h4 text-primary">Подтвердите согласие с условиями использования данного ресурса</p>
 <input type="checkbox"  name='text1' value='2'/>
 <input type="submit"   value="Отправить" class=''/>
