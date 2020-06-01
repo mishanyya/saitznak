@@ -30,7 +30,7 @@ $login=trim($login);
 $login=htmlspecialchars($login);
 $login=base64_encode($login);//шифрование
 }
-session_start();//инициируем сессию
+//session_start();//инициируем сессию
 
 
               //проверяется на блокировку администратором

@@ -30,10 +30,10 @@ else if($parol==$parol1){//зашифровка пароля
 $query=$pdo->prepare("UPDATE polzovateli SET parp=? WHERE loginp=? LIMIT 1");
 $query->execute(array($hashed_parol,$login));
 //помещаем логин и ип в сессию
-session_start();//инициируем сессию
+//session_start();//инициируем сессию
 $_SESSION['login']=$login;
 $_SESSION['ip']=$ip;
-echo"Вы успешно зарегистрировались! <a href='/mainpage.php'>Пройдите на свою страницу!</a>";
+echo"Вы успешно зарегистрировались! <a href='/registration/edit.php'>Пройдите на страницу ввода персональных данных!</a>";
 }
 else{
 exit("Введены разные пароли! <a href='registr1.php'>Повторите ввод</a>");

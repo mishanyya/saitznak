@@ -1,7 +1,7 @@
 <?php
 include "functions.php";//подключить файл с функциями и постоянными переменными
 
-session_start();//открыть сессию
+//session_start();//открыть сессию
 //если существует сессия login и ip то переходим сразу на страницу пользователя
 if(isset($_SESSION['login'])&&(isset($_SESSION['ip']))){
 header("location:mainpage.php");

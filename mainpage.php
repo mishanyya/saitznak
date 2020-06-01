@@ -29,18 +29,9 @@ include "functions.php";//подключить файл с функциями и
 <body>
 
 <?php
-session_start();//инициируем сессию
-/*$_SESSION['login']='123';
-$_SESSION['ip']='345';
-echo 'l='.$_SESSION['login'];
-echo '<br/>i='.$_SESSION['ip'];*/
-/*
-l=123
-i=345
-*/
+
 
  forenter();//функция для разрешения входа
-
 							//удаляем логин других пользователей
 unset($_SESSION['login_q']);
 
@@ -52,7 +43,6 @@ $ip=htmlspecialchars($ip);
 
 							//внесение в онлайн
 online($login,$pdo);
-
  							//проверка на блокировку
 blocked($login,$pdo);
 ?>
@@ -63,7 +53,7 @@ blocked($login,$pdo);
 <h1 class='display-3 mx-auto  d-flex justify-content-center'><?php echo IMYASAYTA; ?></h1>
 	<?php						//получаем номер пользователя
 
-$query=$pdo->prepare("SELECT nomp FROM polzovateli WHERE loginp=? LIMIT 1");
+$query=$pdo->prepare("SELECT imya,region,TIMESTAMPDIFF(YEAR, datarozd, NOW()) FROM lichnoe WHERE loginp=? LIMIT 1");
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))
 {

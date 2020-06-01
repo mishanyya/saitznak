@@ -13,4 +13,4 @@
 config.php
 config_for_localhost.php
 config_for_server.php
-
+variable.php

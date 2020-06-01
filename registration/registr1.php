@@ -4,7 +4,7 @@ include "../functions.php";//подключить файл с функциями
 
 
 $ip = $_SERVER['REMOTE_ADDR'];
-session_start();//открыть сессию
+//session_start();//открыть сессию
 $id_session = session_id();//коэффициент сессии
 
 
@@ -78,8 +78,8 @@ $query->execute(array($login));//+
 $query=$pdo->prepare("INSERT INTO threetimesblock (loginp,timer) VALUES (?,NOW())");
 $query->execute(array($login));//+
 //echo "8";
-$query=$pdo->prepare("INSERT INTO online (loginp,idsession) VALUES (?,?)");
-$query->execute(array($login,$id_session));//+
+$query=$pdo->prepare("INSERT INTO online (loginp) VALUES (?)");
+$query->execute(array($login));//+
 //echo "9";
 
 

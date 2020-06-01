@@ -12,7 +12,9 @@ $description="Описание";
 $alt="alt для image Icon";
 $regcatalog="registration";//имя папки с файлами для обработки регистрации и входа
 
-
+session_start();
+$id_session = session_id();//внесение в переменную номера сессии
+//echo "id_session=".$id_session;
 
 							//ПЕРЕМЕННЫЕ
 $from="From:admin@vmesteprosto.info";//от кого отправляется почта
@@ -25,40 +27,27 @@ define('HEADLINE','&laquo;Вместе просто онлайн&raquo;');//на
 
 // в случае ошибки SQL выражения выведет сообщение об ошибке,
 //на рабочем сервере-отключено!!!
-$error_array = $pdo->errorInfo();
+//$error_array = $pdo->errorInfo();
 
 //////////////////////////////////////////////////////////
-//функция внесения посетителя online НАДО ДОРАБОТАТЬ!
-//online	по умолчанию 0, т.е. не онлайн. Если онлайн, то 1
+//функция внесения посетителя online вносит последнее время
+
 function online($login,$pdo)
 {
-$id_session = session_id();//внесение в переменную номера сессии
-
-                          //Будем считать, что пользователи, которые отсутствовали  в течении 10 минут - покинули ресурс - удаляем их
-$online=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login'");
-$online_count=$online->fetchColumn();
-  if($online_count>0)
- {
- $query=$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login' AND idsession = '$id_session'");
-$query_count=$query->fetchColumn();
-  if($query_count>0) //значит посетитель online
-{
-$query=$pdo->exec("UPDATE online SET vremya = NOW(),idsession = '$id_session' WHERE login='$login'");
-}
- }
-  // Иначе - посетитель только что вошёл - помещаем в таблицу нового посетителя
- else {
-$query=$pdo->exec("INSERT INTO online (login,idsession,vremya) VALUES('$login','$id_session',NOW())");
-}
-$query=$pdo->exec("DELETE FROM online  WHERE vremya < NOW() -  INTERVAL '10' MINUTE");
-
+  $query=$pdo->prepare("UPDATE online SET vremya=NOW() WHERE loginp=?");
+  $query->execute(array($login));
 }
 
-//Функция проверки посетителя на онлайн НАДО ДОРАБОТАТЬ!
-function isonline($login_q,$pdo){
-$isonline =$pdo->query("SELECT COUNT(login) FROM online WHERE login='$login_q'");
-$isonline_num=$isonline->fetchColumn();
-  if($isonline_num>0) return 'online';
+//Функция проверки посетителя на онлайн если был больше 5 минут назад, то не онлайн
+function isonline($login,$pdo){
+//$login_q
+$query=$pdo->prepare("SELECT TIMESTAMPDIFF(MINUTE, vremya, NOW()) FROM online WHERE loginp=?");
+$query->execute(array($login));
+$vremyaarray=$query->fetch(PDO::FETCH_LAZY);
+$vremya=$vremyaarray[0];//прошло количество минут с последнего входа
+if($vremya<5){
+  echo "on-line";
+}
 }
 
 /*пока отменяем верификацию, она будет по желанию!
@@ -107,18 +96,18 @@ if($seyden>$d){$vozrast=$vozrast;}
 return $vozrast;
 }
 
-//функция для разрешения входа, НАДО ДОРАБОТАТЬ!!!Добавить section_id()!!!
+//функция для разрешения входа
 function forenter(){
-if(!isset($_SESSION['login'])||(!isset($_SESSION['ip'])))
+if(!isset($_SESSION['login'])||(!isset($_SESSION['ip']))||(!empty($id_session)) )
 {
   exit("Пройдите пожалуйста для входа на сайт по этой <a href='/index.php'>Ссылке</a>");}
 }
 
-//функция получения данных по логину/modredpol/index.php
-function dataFromLogin($login,$pdo){
-$lich=$pdo->prepare("SELECT loginp,imya,region,gorod,datarozd,vozrast,metkap,ipp,limitfoto,osebe,pol FROM lichnoe WHERE loginp=? LIMIT 1");
+//функция получения данных по логину
+function datafromfogin($login,$pdo){
+$lich=$pdo->prepare("SELECT loginp,imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,semeinpolozh,pol FROM lichnoe WHERE loginp=? LIMIT 1");
 $lich->execute(array($login));
-return $lich;//объект с личными данными
+return $lich;
 }
 
 //проверяется на блокировку администратором
