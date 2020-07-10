@@ -299,10 +299,12 @@ function insertregionnames($pdo){
 $query=$pdo->exec("INSERT INTO goroda (region) VALUES (44)");//работает
 echo $query;//работает
 */
+
 /*
 //$pdo->query просто выполняет запрос
 $query=$pdo->query("INSERT INTO goroda (region) VALUES (445)");//работает
 */
+
 /*
 //$pdo->prepare создает подготовленный запрос
 //$query->execute выполняет этот запрос, возможно несколько раз
@@ -312,21 +314,43 @@ $query->execute(array('qqq'));
 
 //из содержимого текстового файла regions.txt из значений разделенных знаком ',' (запятая) создается массив $array
 $f = fopen("regions.txt", "r");
-$array = explode(",",fgets($f));//из строк делает массив
+//$array = explode(",",fgets($f));//из строк делает массив
+
 fclose($f);
+/*//вывод через каждый элемент массива, работает!
+$array=array('2','22','222','3');
 //создается подготовленный запрос
 $query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работает
 //для каждого элемента массива выполняется этот запрос
+try {
+    $pdo->beginTransaction();
+    foreach ($array as $key)
+    {
+        $query->execute(array($key));
+    }
+    $pdo->commit();
+}catch (Exception $e){
+    $pdo->rollback();
+    throw $e;
+}
+*/
+
+/*//вывод через каждый элемент массива, работает!
+$array=array(4,44,444);
+//создается подготовленный запрос
+$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работает
+//для каждого элемента массива выполняется этот запрос
+    foreach ($array as $key)
+    {
+        $query->execute(array($key));
+    }
+*/
 
 
 
-$array=implode("),(", $array);// вставляет знаки ),( между элементами массива
-$array="(".$array.")";//вставляет знаки ( и ) в начале и конце строки
-echo $array;
+//$query->execute(array($array));//работает? пока нет. эту функцию нужно сделать!!!
+//echo "ok!!!";
 
-
-$query->execute(array($array));//работает? пока нет. эту функцию нужно сделать!!!
-echo "ok!!!";
 
 }
 
