@@ -346,12 +346,17 @@ $query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работае�
     }
 */
 
+/*//вставка через bindParam
+$array=5;
+//создается подготовленный запрос
+$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (:region)");//работает
+$query->bindParam(':region', $array);
+$query->execute();
+*/
 
 
 //$query->execute(array($array));//работает? пока нет. эту функцию нужно сделать!!!
 //echo "ok!!!";
-
-
 }
 
 ?>
