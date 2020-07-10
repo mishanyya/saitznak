@@ -2,7 +2,6 @@
 
 <?php
 include "../functions.php";//подключить файл с функциями и постоянными переменными, и подключенными файлами config.php и pdo.php
-
 ?>
 
 
@@ -43,17 +42,17 @@ $ip=htmlspecialchars($ip);
 forenter();//функция для разрешения входа
 
 							//внесение в онлайн
-online($login,$pdo);
+//online($login,$pdo);
 
  							//проверка на блокировку
-blocked($login,$pdo);
+//blocked($login,$pdo);
 
 //$line=forenter();//функция для разрешения входа
 //$lich=$pdo->prepare("SELECT loginp,imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),semeynpolozh,pol FROM lichnoe WHERE loginp=? LIMIT 1");
 
 
 //объединенный запрос из двух таблиц, строки объединяются по одинаковым значениям полей loginp, которые есть в каждой из таблиц
-$lich=$pdo->prepare("SELECT lichnoe.loginp,lichnoe.imya,lichnoe.region,lichnoe.gorod,lichnoe.datarozd,TIMESTAMPDIFF(YEAR, lichnoe.datarozd, NOW()),lichnoe.semeynpolozh,lichnoe.pol,polzovateli.proveren FROM lichnoe INNER JOIN polzovateli USING(loginp) WHERE loginp=? LIMIT 1");
+$lich=$pdo->prepare("SELECT lichnoe.loginp,lichnoe.imya,lichnoe.region,lichnoe.gorod,lichnoe.datarozd,TIMESTAMPDIFF(YEAR, lichnoe.datarozd, NOW()),lichnoe.pol/*,polzovateli.proveren*/ FROM lichnoe /*INNER JOIN polzovateli USING(loginp)*/ WHERE loginp=? LIMIT 1");
 //echo "login:".$login;
 
 $lich->execute(array($login));
@@ -63,10 +62,9 @@ $_imya=$line[1];
 $_region=$line[2];
 $_gorod=$line[3];
 $_datarozd=$line[4];
-$_vozrast=$line[5];
-$_semeinpolozh=$line[6];
-$_pol=$line[7];
-$_proveren=$line[8];
+$_vozrast=$line[5];//его не надо передавать
+$_pol=$line[6];
+//$_proveren=$line[8];
 }
 
 							//объект с личными данными пользователя
@@ -76,7 +74,7 @@ $_proveren=$line[8];
 
 ?>
 <form  action="edit1.php"  method="post">
-<b>Как к Вам обращаться</b>&nbsp;<input type="text" required value="<?php echo $_imya; ?>" name="imya">
+<b>Как к Вам обращаться</b>&nbsp;<input type="text"  value="<?php echo $_imya; ?>" name="imya"><!--required-->
 <br/>
 <b>Регион</b>
 <select name="region" >
@@ -202,16 +200,6 @@ $chislo++;
 
 <b>Возраст:<?php echo $_vozrast; ?></b><br/>
 
-<b>О себе</b>
-<select name="osebe">
-<?php
-echo"<option>$_osebe</option>";
-?>
-<option>в активном поиске</option>
-<option>в официальном браке</option>
-<option>в гражданском браке</option>
-
-</select>
 <br/>
 
 
