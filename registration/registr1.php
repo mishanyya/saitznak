@@ -20,6 +20,7 @@ $email='1';
 else{
   $email='0';
 }
+
 /*else{
 $text1 = $_POST['text1'];
 $text1 =strtolower($text1);//переводит в нижний регистр
@@ -53,35 +54,50 @@ $vremen=rand();//на случай подтверждения логина - э�
 							//вставка логина в БД
               //этот код работает
 
-//ввод нового логина сразу в несколько основных таблиц в БД
-$query=$pdo->prepare("INSERT INTO polzovateli (loginp,parp,vrepar,timeregistr,proveren) VALUES (?,'не задано',?,NOW(),?)");
-$query->execute(array($login,$vremen,$email));//+
-//echo "1";
-$query=$pdo->prepare("INSERT INTO anketa (loginp) VALUES (?)");
-$query->execute(array($login));//+
-//echo "2";
-$query=$pdo->prepare("INSERT INTO lichnoe (loginp,datarozd,ipp) VALUES (?,CURRENT_DATE(),?)");
-$query->execute(array($login,$ip));//+
-//echo "3";
-$query=$pdo->prepare("INSERT INTO adminblockedlog (login) VALUES (?)");
-$query->execute(array($login));//+
-//echo "4";
-$query=$pdo->prepare("INSERT INTO finansy (loginp) VALUES (?)");
-$query->execute(array($login));//+
-//echo "5";
-$query=$pdo->prepare("INSERT INTO statusp (loginp,data) VALUES (?,NOW())");
-$query->execute(array($login));//+
-//echo "6";
-$query=$pdo->prepare("INSERT INTO metki (loginp) VALUES (?)");
-$query->execute(array($login));//+
-//echo "7";
-$query=$pdo->prepare("INSERT INTO threetimesblock (loginp,timer) VALUES (?,NOW())");
-$query->execute(array($login));//+
-//echo "8";
-$query=$pdo->prepare("INSERT INTO online (loginp) VALUES (?)");
-$query->execute(array($login));//+
-//echo "9";
+//начало транзакции из нескольких запросов
+try{
+  //создание транзакции
+  $pdo->beginTransaction();
 
+  //ввод нового логина сразу в несколько основных таблиц в БД
+  $query=$pdo->prepare("INSERT INTO polzovateli (loginp,parp,vrepar,timeregistr,proveren) VALUES (?,'не задано',?,NOW(),?)");
+  $query->execute(array($login,$vremen,$email));//+
+
+  $query=$pdo->prepare("INSERT INTO anketa (loginp) VALUES (?)");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO lichnoe (loginp,datarozd,ipp) VALUES (?,CURRENT_DATE(),?)");
+  $query->execute(array($login,$ip));//+
+
+  $query=$pdo->prepare("INSERT INTO adminblockedlog (login) VALUES (?)");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO finansy (loginp) VALUES (?)");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO statusp (loginp,data) VALUES (?,NOW())");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO metki (loginp) VALUES (?)");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO threetimesblock (loginp,timer) VALUES (?,NOW())");
+  $query->execute(array($login));//+
+
+  $query=$pdo->prepare("INSERT INTO online (loginp) VALUES (?)");
+  $query->execute(array($login));//+
+  //echo "OK!";
+} catch (PDOException $e) { //если не сработает один из запросов, то все запросы этой транзакции отменяются
+   $pdo->rollBack();
+   //echo "PDOException:".$e->getCode()."|".$e->getMessage();
+   //покажет код исключения и что именно не так в коде
+
+   echo "Что-то пошло не так! <a href='/registr.php'>Попробуйте еще раз!</a>";
+   exit();
+ }
+
+ //запуск кода транзакции
+ $pdo->commit();
 
 
 ?>
@@ -127,15 +143,7 @@ $query->execute(array($login));//+
 </html>
 
 
-
-
-
-
-
 <?php
-
-
-
 }//окончание цикла
 
 /*подсчет затронутых строк
