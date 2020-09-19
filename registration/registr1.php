@@ -5,7 +5,6 @@ include "../functions.php";//подключить файл с функциями
 
 $ip = $_SERVER['REMOTE_ADDR'];
 //session_start();//открыть сессию
-$id_session = session_id();//коэффициент сессии
 
 
                                              //модуль согласия с правилами сайта

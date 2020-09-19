@@ -4,27 +4,128 @@ include "config.php";//присоединить файл для подключе
 include "pdo.php";//присоединить файл для создания объекта PDO
 include "variable.php";//присоединить файл с переменными значениями сайта и запуском сессии
 
-
 //////////////////////////////////////////////////////////
-//функция внесения посетителя online вносит последнее время
+/*Функции для входа и безопасности*/
 
-function online($login,$pdo)
-{
-  $query=$pdo->prepare("UPDATE online SET vremya=NOW() WHERE loginp=?");
-  $query->execute(array($login));
+//Функция проверки введенных логина и пароля на странице ввода логина и пароля для входа на сайт
+//Каждая попытка входа должна запоминать IP и время!
+function threetimesenter($login,$parol,$pdo)
+{							//логин уже проверен на существование в самом коде для входа
+							//берем из БД кол-во запросов и разницу во времени для пользователя
+$query=$pdo->prepare("SELECT times,TIMESTAMPDIFF(MINUTE, timer, NOW()) FROM threetimesblock WHERE loginp=?");
+$query->execute(array(/*$times,*/$login));
+$timesarray=$query->fetch(PDO::FETCH_LAZY);
+$times=$timesarray[0];//количество попыток из БД
+$period=$timesarray[1];//период с последнего ввода
+//Проверяется время и количество попыток входа
+if($times>2){
+  //если количество уже совершенных попыток больше 2
+if($period<=15){
+  //если прошло 15 минут и меньше
+exit("Вы превысили число попыток ввода - следующая попытка возможна через 15 минут <a href='/index.php'>Дальше</a>");
+  //блокируется ввод пароля, даже если он правильный
+}
+//если прошло 15 минут и больше, то ничего не происходит и код работает дальше
+}
+else{//если количество уже совершенных попыток меньше 2
+  $times++;
+  //увеличивается счетчик на 1
+  $query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=? WHERE loginp=?");
+  $query->execute(array($times,$login));
+  //обновляется время ввода и значение счетчика в БД
 }
 
-//Функция проверки посетителя на онлайн если был больше 5 минут назад, то не онлайн
-function isonline($login,$pdo){
-//$login_q
-$query=$pdo->prepare("SELECT TIMESTAMPDIFF(MINUTE, vremya, NOW()) FROM online WHERE loginp=?");
+//Проверяется пароль
+$query=$pdo->prepare("SELECT parp FROM polzovateli WHERE loginp=? LIMIT 1");
 $query->execute(array($login));
-$vremyaarray=$query->fetch(PDO::FETCH_LAZY);
-$vremya=$vremyaarray[0];//прошло количество минут с последнего входа
-if($vremya<5){
-  echo "on-line";
+while($line=$query->fetch(PDO::FETCH_LAZY))
+{
+$parolfrom=$line[0];
+//извлекаем пароль из БД
+}
+
+//Сравниваются введенный и существующий пароли
+if (hash_equals($parolfrom, crypt($parol, $parolfrom))) {
+//если логин и пароль совпали
+//если вход удачен, то обнуляем счетчик попыток
+$query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=0 WHERE loginp=?");
+$query->execute(array($login));
+//ip пользователя
+$ip = $_SERVER['REMOTE_ADDR'];
+//обновляется ip в БД
+$query=$pdo->prepare("UPDATE lichnoe SET ipp=? WHERE loginp=?");
+$query->execute(array($ip,$login));
+//создается сессия IP
+$_SESSION['ip']=$ip;
+//создается сессия логина
+$_SESSION['login']=$login;
+//вносится дата и IP каждого входа  в БД
+$query=$pdo->prepare("INSERT INTO forIP (login,ip) VALUES (?,?)");
+$query->execute(array($login,$ip));
+
+
+//происходит переход на страницу пользователя
+header("location:/mainpage.php");
+}
+else{//если пароли не совпали
+exit("Пароль НЕ верен! <a href='/index.php'>Повторите попытку!</a>");
+}
+}//конец функции
+
+//Функция для разрешения входа,если есть сессии логина + IP + ID текущей сессии
+//помещается только на страницах пользователя, а не на странице входа на сайт!
+function forenter(){
+
+
+echo '<br>login='.$_SESSION['login'];
+echo '<br>ip='.$_SESSION['ip'];
+echo '<br>id='.$_SESSION['id'];
+
+
+//если не существует хотя бы что-то из сессий login,IP или сессия ID, созданная при входе не равна текущему ID, то переходим на страницу входа
+if(!isset($_SESSION['login'])||!isset($_SESSION['ip'])||($_SESSION['id']!=session_id())){
+  exit("Пройдите пожалуйста для входа на сайт по этой <a href='/index.php'>Ссылке</a>");
+}
+//если существует, даже и неверный, то сайт будет работать дальше, все равно с другим логином он не выдаст инфу
+//проверяем куку PHPSESSID и сравниваем ее с БД,
+//если  совпадает
+//если не совпадает
+}
+
+//главное фото функция
+function glavfoto($login,$pdo)
+{
+$folder11 = '/mainfoto/';//папка для выгрузки файлов
+$netfoto="/mainfoto/fotonet.png";
+$fotki=$pdo->prepare("SELECT COUNT(foto) FROM fototabl WHERE loginp=? AND metka='glav'");//выбор главного фото по логину и метке фото
+$fotki->execute(array($login));
+$fotki_num=$fotki->fetchColumn();
+if($fotki_num>0){
+$fotka=$pdo->prepare("SELECT foto FROM fototabl WHERE loginp=? AND metka='glav'");//выбор главного фото по логину и метке фото
+$fotka->execute(array($login));
+while($line=$fotka->fetch(PDO::FETCH_LAZY))          //выводит строки пока они не кончатся в бд
+{
+$foto=$line->foto;
+$foto=$folder11.$foto;
+}
+if($foto){
+return $foto;
+ }}//если существует файл
+else {
+    return $netfoto;
 }
 }
+
+//функция получения данных по логину
+function dataFromLogin($login,$pdo){  
+$lich=$pdo->prepare("SELECT imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,pol FROM lichnoe WHERE loginp=? LIMIT 1");
+$lich->execute(array($login));
+return $lich;
+}
+
+
+//НЕПРОВЕРЕННЫЕ ФУНКЦИИ->>>
+////////////////////////////////////////////////////////////
 
 /*пока отменяем верификацию, она будет по желанию!
 
@@ -42,62 +143,19 @@ mail($address,$sub,$mes,$from);
 
 //$_SESSION['login']=$login;
 //echo "Сообщение  отправлено!<br/>Сообщение  придет в течение некоторого времени, в зависимости от загрузки сети,также оно может находиться в папке 'Спам'<br/>Если не пришло отправьте его <a href='registr.php'>еще раз</a> или  <a href='mailto:admin@vmesteprosto.info'>нажмите на ссылку для отправки нам сообщения и Вас зарегистрируют в ближайщее время</a>";
-/////////////
 
 
-$today = date("Y-m-d H:i:s");//время в формате mysql
-$segodnya = date("Y-m-d");//сегодняшний день
-$segodnya_18_ = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-18);//-18 лет
-$segodnya_18=date("Y-m-d",$segodnya_18_);
-$segodnya_70_ = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-70);//-70 лет
-$segodnya_70=date("Y-m-d",$segodnya_70_);
-$U=date("YmdHis");//время в формате mysql для записи имени фотографий
-$god_70_ = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-70);//-70 лет
-$god_70=date("Y",$god_70_);
-$god_18_ = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-18);//-18 лет
-$god_18=date("Y",$god_18_);
-//cal_days_in_month(CAL_GREGORIAN, 8, 2003); // 31 количество дней в месяце такого то года
-//функция вычисления возраста
-function raznitcavozrasta($g,$m,$d) {
-$seygod=date("Y");
-$seymes=date("m");
-$seyden=date("d");
-$vozrast=$seygod-$g;
-if($seymes<=$m){
-if($seyden<$d){
-$vozrast=$vozrast-1;}
-else if($seyden==$d){$vozrast=$vozrast;echo"Поздравляем с Днем Рождения!";}
-if($seyden>$d){$vozrast=$vozrast;}
-}
-return $vozrast;
-}
 
-//функция для разрешения входа
-function forenter(){
-if(!isset($_SESSION['login'])||(!isset($_SESSION['ip']))||(!empty($id_session)) )
-{
-  exit("Пройдите пожалуйста для входа на сайт по этой <a href='/index.php'>Ссылке</a>");}
-}
+/*Функции несвязанные с входом и безопасностью*/
 
-//функция получения данных по логину
-function datafromfogin($login,$pdo){
-$lich=$pdo->prepare("SELECT loginp,imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,semeinpolozh,pol FROM lichnoe WHERE loginp=? LIMIT 1");
-$lich->execute(array($login));
-return $lich;
-}
 
-//проверяется на блокировку администратором
-function blocked($login,$pdo)
-{
-$query = $pdo->prepare("SELECT blocked FROM adminblockedlog WHERE login=? LIMIT 1"); //выполнение запроса вывод количества строк pdo
-$query->execute(array($login));
-$blocked=$query->fetch(PDO::FETCH_LAZY);
-$qwerty=$blocked[0];
-if($qwerty==1)
-{
-return exit("Ваша страница временно закрыта в связи с многочисленными жалобами. После быстрой проверки вопрос будет решен в ближайшее время!");
-}
-}
+
+
+
+
+
+
+
 
 
 
@@ -111,27 +169,7 @@ if($skolka>0){echo"Отправьте сообщение 'reg' со своей �
 }
 
 
-//главное фото функция
-function glavfoto($login,$pdo)
-{
-$folder11 = '/modredpol/fotosait/';//папка для выгрузки файлов
-$netfoto="/modredpol/fotosait/fotonet.png";
-$fotki=$pdo->prepare("SELECT COUNT(foto) FROM fototabl WHERE loginp=? AND metka='glav'");//выбор главного фото по логину и метке фото
-$fotki->execute(array($login));
-$fotki_num=$fotki->fetchColumn();
-if($fotki_num>0){
-$fotka=$pdo->prepare("SELECT foto FROM fototabl WHERE loginp=? AND metka='glav'");//выбор главного фото по логину и метке фото
-$fotka->execute(array($login));
-while($line=$fotka->fetch(PDO::FETCH_LAZY))          //выводит строки пока они не кончатся в бд
-{
-$foto=$line->foto;
-$foto=$folder11.$foto;
-}
-if($foto){
-return $foto;
- }}//если существует файл
-else {return $netfoto; }
-}
+
 
 
 //Функция поиска по логину номера из табл регистр с дополнит шифрованием
@@ -221,144 +259,59 @@ $query->execute(array($login,$login_q));
 
 
 
-//Функция проверки введенных логина и пароля при входе на сайт
-//Каждая попытка входа должна запоминать IP и время!
-function threetimesenter($login,$parol,$pdo)
+
+
+
+
+//функция внесения посетителя online вносит последнее время
+function online($login,$pdo)
 {
-							//логин уже проверен на существование в самом коде для входа
-							//берем из БД кол-во запросов и разницу во времени для пользователя
-$query=$pdo->prepare("SELECT times,TIMESTAMPDIFF(MINUTE, timer, NOW()) FROM threetimesblock WHERE loginp=?");
-
-
-$query->execute(array(/*$times,*/$login));
-$timesarray=$query->fetch(PDO::FETCH_LAZY);
-$times=$timesarray[0];//количество попыток из БД
-$period=$timesarray[1];//период с последнего ввода
-
-//echo 'times:'.$times.'<br/>';
-//echo 'count:'.$period.'<br/>';
-if($times>2){
-  //считаем разницу в минутах
-if($period<=15){
-  //если прошло 15 минут и меньше
-exit("Вы превысили число попыток ввода- следующая попытка возможна через 15 минут <a href='/index.php'>Дальше</a>");
-  //блокируется ввод пароля, даже если он правильный
-}}
-else{
-  //увеличивается счетчик на 1
-  $times++;
-  $query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=? WHERE loginp=?");
-  $query->execute(array($times,$login));
-  //проверяется пароль
+  $query=$pdo->prepare("UPDATE online SET vremya=NOW() WHERE loginp=?");
+  $query->execute(array($login));
 }
 
-//извлекаем пароль из БД
-$query=$pdo->prepare("SELECT parp FROM polzovateli WHERE loginp=? LIMIT 1");
+//Функция проверки посетителя на онлайн если был больше 5 минут назад, то не онлайн
+function isonline($login,$pdo){
+//$login_q
+$query=$pdo->prepare("SELECT TIMESTAMPDIFF(MINUTE, vremya, NOW()) FROM online WHERE loginp=?");
 $query->execute(array($login));
-while($line=$query->fetch(PDO::FETCH_LAZY))
+$vremyaarray=$query->fetch(PDO::FETCH_LAZY);
+$vremya=$vremyaarray[0];//прошло количество минут с последнего входа
+if($vremya<5){
+  echo "on-line";
+}
+}
+
+//функция вычисления возраста
+function raznitcavozrasta($g,$m,$d) {
+$seygod=date("Y");
+$seymes=date("m");
+$seyden=date("d");
+$vozrast=$seygod-$g;
+if($seymes<=$m){
+if($seyden<$d){
+$vozrast=$vozrast-1;}
+else if($seyden==$d){$vozrast=$vozrast;echo"Поздравляем с Днем Рождения!";}
+if($seyden>$d){$vozrast=$vozrast;}
+}
+return $vozrast;
+}
+
+
+
+
+//проверяется на блокировку администратором
+function blocked($login,$pdo)
 {
-$parolfrom=$line[0];
-}
-
-//сравниваем пароли
-if (hash_equals($parolfrom, crypt($parol, $parolfrom))) {
-//если логин и пароль совпали
-//если вход удачен, то обнуляем счетчик попыток
-$query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=0 WHERE loginp=?");
+$query = $pdo->prepare("SELECT blocked FROM adminblockedlog WHERE login=? LIMIT 1"); //выполнение запроса вывод количества строк pdo
 $query->execute(array($login));
-
-//ip пользователя
-$ip = $_SERVER['REMOTE_ADDR'];
-//обновляется ip в БД
-$query=$pdo->prepare("UPDATE lichnoe SET ipp=? WHERE loginp=?");
-$query->execute(array($ip,$login));
-//создается сессия IP
-$_SESSION['ip']=$ip;
-//создается сессия логина
-$_SESSION['login']=$login;
-
-//вносим IP каждого входа и дату в таблицу
-
-$query=$pdo->prepare("INSERT INTO forIP (login,ip) VALUES (?,?)");
-$query->execute(array($login,$ip));
-
-//переход на страницу пользователя
-header("location:/mainpage.php");
+$blocked=$query->fetch(PDO::FETCH_LAZY);
+$qwerty=$blocked[0];
+if($qwerty==1)
+{
+return exit("Ваша страница временно закрыта в связи с многочисленными жалобами. После быстрой проверки вопрос будет решен в ближайшее время!");
 }
-else{
-  exit("Пароль НЕ верен! <a href='/index.php'>Повторите попытку!</a>");
 }
-}//конец функции
-
-//вставка всех регионов РФ в таблицу goroda
-//взять список из файла "регионы РФ.txt" и вставить кавычки перед и после каждой запятой
-function insertregionnames($pdo){
-
-/*
-//$pdo->exec() возвращает количество строк, которые были модифицированы или удалены в ходе его выполнения
-$query=$pdo->exec("INSERT INTO goroda (region) VALUES (44)");//работает
-echo $query;//работает
-*/
-
-/*
-//$pdo->query просто выполняет запрос
-$query=$pdo->query("INSERT INTO goroda (region) VALUES (445)");//работает
-*/
-
-/*
-//$pdo->prepare создает подготовленный запрос
-//$query->execute выполняет этот запрос, возможно несколько раз
-$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работает
-$query->execute(array('qqq'));
-*/
-
-//из содержимого текстового файла regions.txt из значений разделенных знаком ',' (запятая) создается массив $array
-$f = fopen("regions.txt", "r");
-//$array = explode(",",fgets($f));//из строк делает массив
-
-fclose($f);
-/*//вывод через каждый элемент массива, работает!
-$array=array('2','22','222','3');
-//создается подготовленный запрос
-$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работает
-//для каждого элемента массива выполняется этот запрос
-try {
-    $pdo->beginTransaction();
-    foreach ($array as $key)
-    {
-        $query->execute(array($key));
-    }
-    $pdo->commit();
-}catch (Exception $e){
-    $pdo->rollback();
-    throw $e;
-}
-*/
-
-/*//вывод через каждый элемент массива, работает!
-$array=array(4,44,444);
-//создается подготовленный запрос
-$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (?)");//работает
-//для каждого элемента массива выполняется этот запрос
-    foreach ($array as $key)
-    {
-        $query->execute(array($key));
-    }
-*/
-
-/*//вставка через bindParam
-$array=5;
-//создается подготовленный запрос
-$query=$pdo->prepare("INSERT INTO goroda (region) VALUES (:region)");//работает
-$query->bindParam(':region', $array);
-$query->execute();
-*/
-
-
-//$query->execute(array($array));//работает? пока нет. эту функцию нужно сделать!!!
-//echo "ok!!!";
-}
-
 ?>
 <!--подключение стилей с сайта Bootstrap-->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">

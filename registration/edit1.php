@@ -97,14 +97,16 @@ if($imya==''){
   exit("<a href='edit.php'>Введите имя!</a>");
 }
 
-  echo "<br/>start";
+
                                    //обновление данных в таблице личное
 $query=$pdo->prepare("UPDATE lichnoe SET imya=?/*,region=?*/,gorod=?,datarozd=?,pol=? WHERE loginp=?");
 $query->execute(array($imya/*,$region*/,$gorod,$datarozd,$pol,$login));
 
-echo "<br/>ok!!!";//здесь не работает!!!
+echo "<br/>ok!!!";//работает!!!
 
-//header("location:../mainpage.php");
+//продолжаем регистрацию отсюда(зарегистрировались и ввели личные данные)
+//переход на главную страницу пользователя
+header("location:../mainpage.php");
 }
 else{
   exit("<a href='edit.php'>Попробуйте снова!</a>");

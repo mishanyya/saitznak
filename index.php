@@ -1,11 +1,7 @@
 <?php
 include "functions.php";//подключить файл с функциями и постоянными переменными
 
-//session_start();//открыть сессию
-//если существует сессия login и ip то переходим сразу на страницу пользователя
-if(isset($_SESSION['login'])&&(isset($_SESSION['ip']))){
-header("location:mainpage.php");
-}
+
 ?>
 
 
@@ -24,9 +20,6 @@ header("location:mainpage.php");
 </head>
 <body>
 
-<?php
-insertregionnames($pdo);
-?>
 <div>
 <img src='<?php echo EMBLEMA ;?>' class='rounded mx-auto d-block emblemaindex' alt="<?php echo $alt; /*показать alt для эмблемы сайта*/?>">
 <h1 class='display-3 mx-auto  d-flex justify-content-center'><?php echo IMYASAYTA; ?></h1>

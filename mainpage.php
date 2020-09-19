@@ -8,7 +8,7 @@ include "functions.php";//подключить файл с функциями и
 
 ﻿<html>
 <head>
-
+<script></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
 <script src="js/ajax.js" type="text/javascript"></script>
@@ -32,6 +32,7 @@ include "functions.php";//подключить файл с функциями и
 
 
  forenter();//функция для разрешения входа
+ /*
 							//удаляем логин других пользователей
 unset($_SESSION['login_q']);
 
@@ -45,38 +46,39 @@ $ip=htmlspecialchars($ip);
 online($login,$pdo);
  							//проверка на блокировку
 blocked($login,$pdo);
+*/
 ?>
 
 
 <div class="column1">
 <img src='<?php echo EMBLEMA ;?>' class='rounded mx-auto d-block emblemaindex' alt="<?php echo $alt; /*показать alt для эмблемы сайта*/?>">
 <h1 class='display-3 mx-auto  d-flex justify-content-center'><?php echo IMYASAYTA; ?></h1>
-	<?php						//получаем номер пользователя
-
+	<?php
+  //получаем номер пользователя, возможно ненужно
+/*
 $query=$pdo->prepare("SELECT imya,region,TIMESTAMPDIFF(YEAR, datarozd, NOW()) FROM lichnoe WHERE loginp=? LIMIT 1");
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))
 {
-$np=$line[0];
-$_SESSION['np']=$np;
-}
+$name=$line[0];
+$_SESSION['np']=$name;
+}*/
 							//главное фото
 $glavfoto=glavfoto($login,$pdo);
 							//внесение главного фото в сессию
 $_SESSION['glavfoto']=$glavfoto;
 							//получаем личные данные по логину
+              //imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,pol
 $lich=dataFromLogin($login,$pdo);
+
 while($line=$lich->fetch(PDO::FETCH_LAZY))
 {
 $imya=$line->imya;
 $region=$line->region;
 $gorod=$line->gorod;
 $datarozd=$line->datarozd;
-$vozrast=$line->vozrast;
-$metkap=$line->metkap;
+$vozrast=$line[4];
 $ipp=$line->ipp;
-$limitfoto=$line->limitfoto;
-$osebe=$line->osebe;
 $pol=$line->pol;
 							//получаем мою метку
 $_SESSION['metkap']=$metkap;
@@ -88,16 +90,15 @@ $_SESSION['imya']=$imya;
 							//модуль с главным фото и личными данными
 echo"<div class='block1'>";
 echo"<img  class='glavfoto' src='$glavfoto' />";
-echo"<p>Имя <span class='svoidannie'>$imya</span></p>";//имя
-echo"<p>Регион <span class='svoidannie'>$region</span></p>";//Регион
-echo"<p>Населенный пункт <span class='svoidannie'>$gorod</span></p>";//Населенный пункт
-echo"<p>Возраст <span class='svoidannie'>$vozrast</span></p>";//Возраст
-echo"<p>О себе <span class='svoidannie'>$osebe</span></p>";//о себе
+if (isset($imya)){echo"<p>Имя <span class='svoidannie'>$imya</span></p>";}//имя
+if (isset($region)){echo"<p>Регион <span class='svoidannie'>$region</span></p>";}//Регион
+if (isset($gorod)){echo"<p>Населенный пункт <span class='svoidannie'>$gorod</span></p>";}//Населенный пункт
+if ($vozrast>0){echo"<p>Возраст <span class='svoidannie'>$vozrast</span></p>";}//Возраст
 echo"</div>";//END модуль с главным фото и личными данными
 
 							//модуль для управления профилем
 echo"<div class='block1'>";
-
+echo "<br>Отсюда дорабатывать->>><br>";
 
 echo"<p><a href='soobsheniya.php' class='lichnoe'>Сообщения</a></p>";
 echo"<p><a href='anketa.php' class='lichnoe'>Моя анкета</a></p>";
@@ -107,12 +108,13 @@ echo"<p><a href='lichnoe.php' class='lichnoe'>Личные данные</a></p>"
 echo"<p><a href='metki.php' class='lichnoe'>Доступ к странице</a></p>";
 echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe'>Введите свою мысль</a></p>";
 echo"</div>";
+
  ?>
 </div>
 
 <div class="column2">
 <?php
-
+/*
 echo"<div class='neproch_soobsh'></div>";//блок непрочитанных сообщений ajax
 
 							//модуль вывода последних зарегистрировавшихся в этой группе кроме общей группы
@@ -233,11 +235,13 @@ echo"<i>$dataFriend</i>";
 echo"</div>";//END блок вывода фото или лозунга
 }
 }
+*/
 ?>
 </div>
 
 <div class="column3">
 <?php
+/*
 							//модуль выхода и показа даты
 echo"<div class='block3'>";
 echo"<a href='exit.php'>Выход</a>";
@@ -394,6 +398,7 @@ echo"<p><img src='$foto' class='imgmoi'/><a href='stdruga.php?id=$n'>$imya</a></
 }
 }
 echo"</div>";//END модуль гостей, черного списка
+*/
 ?>
 </div>
 <script>onload=neproch_soobsh();</script>
