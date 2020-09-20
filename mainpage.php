@@ -2,13 +2,11 @@
 
 <?php
 include "functions.php";//подключить файл с функциями и постоянными переменными
-
+include "work/general.php";//присоединить файл с общими функциями страниц пользователя сайта
 ?>
-
 
 ﻿<html>
 <head>
-<script></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
 <script src="js/ajax.js" type="text/javascript"></script>
@@ -31,7 +29,7 @@ include "functions.php";//подключить файл с функциями и
 <?php
 
 
- forenter();//функция для разрешения входа
+
  /*
 							//удаляем логин других пользователей
 unset($_SESSION['login_q']);
@@ -80,12 +78,17 @@ $datarozd=$line->datarozd;
 $vozrast=$line[4];
 $ipp=$line->ipp;
 $pol=$line->pol;
-							//получаем мою метку
-$_SESSION['metkap']=$metkap;
-							//внесение пола в сессию
-$_SESSION['pol']=$pol;
-							//внесение имени в сессию
-$_SESSION['imya']=$imya;
+/*
+//помещаем несекретные данные в куки
+//внесение моей метки
+setcookie("metkap",$metkap);
+//внесение пола
+setcookie("pol",$pol);
+//внесение имени
+setcookie("imya",$imya);
+//надо проверить создание этих кук
+//если значение пустое, кука может не создаваться!!!
+*/
 }
 							//модуль с главным фото и личными данными
 echo"<div class='block1'>";
@@ -98,15 +101,13 @@ echo"</div>";//END модуль с главным фото и личными д�
 
 							//модуль для управления профилем
 echo"<div class='block1'>";
-echo "<br>Отсюда дорабатывать->>><br>";
-
-echo"<p><a href='soobsheniya.php' class='lichnoe'>Сообщения</a></p>";
-echo"<p><a href='anketa.php' class='lichnoe'>Моя анкета</a></p>";
-echo"<p><a href='zagrf.php' class='lichnoe'>Загрузить фото</a></p>";
-echo"<p><a href='izobrudal.php' class='lichnoe'>Мои фото</a></p>";
-echo"<p><a href='lichnoe.php' class='lichnoe'>Личные данные</a></p>";
-echo"<p><a href='metki.php' class='lichnoe'>Доступ к странице</a></p>";
-echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe'>Введите свою мысль</a></p>";
+echo"<p><a href=".$workcatalog."/soobsheniya.php class='lichnoe'>Сообщения</a></p>";
+echo"<p><a href=".$workcatalog."/anketa.php class='lichnoe'>Моя анкета</a></p>";
+echo"<p><a href=".$workcatalog."/zagrf.php class='lichnoe'>Загрузить фото</a></p>";
+echo"<p><a href=".$workcatalog."/izobrudal.php class='lichnoe'>Мои фото</a></p>";
+echo"<p><a href=".$workcatalog."/lichnoe.php class='lichnoe'>Личные данные</a></p>";
+echo"<p><a href=".$workcatalog."/metki.php class='lichnoe'>Доступ к странице</a></p>";
+echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe'>Введите свое сообщение для всех</a></p>";
 echo"</div>";
 
  ?>
@@ -114,7 +115,9 @@ echo"</div>";
 
 <div class="column2">
 <?php
-/*
+echo "<br>Отсюда дорабатывать->>><br>";
+
+//проверить работу позже
 echo"<div class='neproch_soobsh'></div>";//блок непрочитанных сообщений ajax
 
 							//модуль вывода последних зарегистрировавшихся в этой группе кроме общей группы
@@ -123,6 +126,7 @@ echo"<div class='block2'>";
 $query=$pdo->prepare("SELECT COUNT(drug) FROM druzyainet WHERE drug=? AND net='0' AND da='0'");
 $query->execute(array($login));
 $num_row=$query->fetchColumn();
+
 							//если есть приславшие приглашения- вывод приглашений
 if($num_row>0){
 echo"<p>Вас приглашает в друзья:</p>";
@@ -235,7 +239,7 @@ echo"<i>$dataFriend</i>";
 echo"</div>";//END блок вывода фото или лозунга
 }
 }
-*/
+
 ?>
 </div>
 
@@ -401,7 +405,7 @@ echo"</div>";//END модуль гостей, черного списка
 */
 ?>
 </div>
-<script>onload=neproch_soobsh();</script>
+<script>onload='neproch_soobsh()';</script>
 <script>setInterval('neproch_soobsh()',5000);</script>
 
 

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include "functions.php";//подключить файл с функциями и постоянными переменными
+include "general.php";//присоединить файл с общими функциями страниц пользователя сайта
 ?>
 
 
-﻿<html>	
+﻿<html>
 <head>
 <title>	Знакомства</title>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
@@ -22,7 +23,7 @@ include ("../time.php");//подключить файл с функциями и
 <script src='fotointextarea.js'></script>
 
 
-<link rel="stylesheet" type="text/css" href="/style.css"/>	
+<link rel="stylesheet" type="text/css" href="/style.css"/>
 </head>
 	<body>
 <div class="column1">
@@ -30,11 +31,11 @@ include ("../time.php");//подключить файл с функциями и
 <span class='imyasayta'><?php echo IMYASAYTA; ?></span>
 <a href='index.php'><img src='<?php echo EMBLEMA; ?>' class='emblema'/></a>
 <?php
-       
+
 echo"<div class='block1'>";
-session_start();//инициируем сессию   
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
- forenter();					
+ forenter();
 							//логин и ип выводим из сессии
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);
@@ -46,36 +47,36 @@ $metkap=$_SESSION['metkap'];
 
 							//вывод главного фото и имени
 $glavfoto=$_SESSION['glavfoto'];
-$glavfoto=htmlspecialchars($glavfoto);							
+$glavfoto=htmlspecialchars($glavfoto);
 $imya=$_SESSION['imya'];
 $imya=htmlspecialchars($imya);
 echo"<img src='$glavfoto' class='glavfoto'/>";
 
-										
+
 
 							//Функция при открытии проверяет наличие логина и совпадение парол и логина
-($login,$ip,$pdo);		
+//($login,$ip,$pdo);
 
 							//проверка на блокировку
-blocked($login,$pdo);					
+blocked($login,$pdo);
 
 							//внесение в онлайн
 online($login,$pdo);
 
 							//получение адресата login_q
 
-							//если получено id - передается с soobsheniya.php когда есть непрочитанные сообщения 
+							//если получено id - передается с soobsheniya.php когда есть непрочитанные сообщения
 if(isset($_GET['id']))
 {
 $id=$_GET['id'];
-$id=htmlspecialchars($id); 
+$id=htmlspecialchars($id);
 $login_q=iznomera($id,$pdo);
 $_SESSION['login_q']=$login_q;
-}						
+}
 							//если получен adresat??????????????????????
 else if(isset($_POST['adresat']))
 {
-unset($_SESSION['login_q']); 
+unset($_SESSION['login_q']);
 $login_q=$_POST['adresat'];
 $login_q=htmlspecialchars($login_q);
 $_SESSION['login_q']=$login_q;
@@ -84,12 +85,12 @@ $_SESSION['login_q']=$login_q;
 								//если существует  login_q ???????????????????????????????????????
 else  if(isset($_SESSION['login_q']))
 {
-$login_q=$_SESSION['login_q']; 
+$login_q=$_SESSION['login_q'];
 $login_q=htmlspecialchars($login_q);
 
-}	
+}
 
-	
+
 echo"</div>";
 
 echo"<div class='block1'>";
@@ -101,7 +102,7 @@ $query=$pdo->prepare("UPDATE soobsheniya SET otmetka='1' WHERE  otkogo=? AND kom
 $query->execute(array($login_q,$login));
 
 
-//выводим мои данные 
+//выводим мои данные
 $lich=dataFromLogin($login,$pdo);
 while($line=$lich->fetch(PDO::FETCH_LAZY))
 {
@@ -117,7 +118,7 @@ $osebe=$line->osebe;
 }
 
 
-//выводим данные адресата 
+//выводим данные адресата
 $lich=dataFromLogin($login_q,$pdo);
 while($line=$lich->fetch(PDO::FETCH_LAZY))
 {
@@ -147,7 +148,7 @@ echo"<b>Ваш собеседник :</b><br/><a href='stdruga.php'><img src='$g
 
 }							//конец блока если есть адресат login_q
 							//если не существует login_q
-else 
+else
 {
 echo "<i>не выбран собеседник</i>";
 }
@@ -167,7 +168,7 @@ if($line[0]!=''){
 							//адрес главной фотографии
 $fotoadres=glavfoto($line[0],$pdo);
 $l=izloginanomer($line[0],$pdo);
-echo"<a href='soobsheniya1.php?pn=$l'><img src='$fotoadres' class='imgmoi'/>"; 
+echo"<a href='soobsheniya1.php?pn=$l'><img src='$fotoadres' class='imgmoi'/>";
 
 
 $lich=dataFromLogin($line[0],$pdo);
@@ -183,9 +184,9 @@ echo"</a>";
 $login_a=iznomera($l,$pdo);
 //
 
-echo"<p><a href='' src='$l' onclick='deletemessages(this);return false;' class='lichnoe'>Удалить переписку</a></p>"; 
+echo"<p><a href='' src='$l' onclick='deletemessages(this);return false;' class='lichnoe'>Удалить переписку</a></p>";
 }
-}							
+}
 
 
 echo"<a href='index.php'>На мою страницу</a>";
@@ -206,7 +207,7 @@ $query=$pdo->prepare("SELECT DISTINCT otkogo FROM soobsheniya WHERE komu=? AND o
 $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))//помещение в массив строк из бд
 {
-$nomer=izloginanomer($line[0],$pdo);//шифруется номер 
+$nomer=izloginanomer($line[0],$pdo);//шифруется номер
 $nlog1=iznomera($nomer,$pdo);//расшифровывается номер и выходит логин
 
 $lich=dataFromLogin($nlog1,$pdo);
@@ -239,7 +240,7 @@ echo"<input type='button' value='Еще' id='ischo' onclick='vozvrat()' class='s
 //}
 
 echo"<div id='echo'></div>";
-echo"<div id='ajax_soobsh'>";							
+echo"<div id='ajax_soobsh'>";
 							//если есть сообщения
 if($kolvo>=0){
 $s=$kolvo-15;//с какой строки выходит
@@ -309,7 +310,7 @@ echo"</div>";//END formessage
 </div>
 <form  class="formadown" >
 
- <div class='textarea' id="soobsh" contenteditable="true"></div> 
+ <div class='textarea' id="soobsh" contenteditable="true"></div>
 <input type="button" id="soob" value="Отправить сообщение" onclick='sendmessage()'/>
 
 </form>

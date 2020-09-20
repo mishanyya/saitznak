@@ -1,32 +1,33 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include "functions.php";//подключить файл с функциями и постоянными переменными
+include "general.php";//присоединить файл с общими функциями мтраниц пользователя сайта
 ?>
 
 
-﻿<html>	
+﻿<html>
 <head>
 <title>Загрузка фото</title>
 <script src="ajax.js"></script>
 <script src="opisanie.js"></script>
-<link rel="stylesheet" type="text/css" href="/style.css"/>	
+<link rel="stylesheet" type="text/css" href="/style.css"/>
 </head>
 	<body>
 <a href='index.php'><img src='<?php echo EMBLEMA; ?>' class='emblemaindex'/></a>
- 
-<form action="izobrudal1.php" method="POST" class='mesimg'> 
+
+<form action="izobrudal1.php" method="POST" class='mesimg'>
 
 <?php
 
 
 
 
-session_start();//инициируем сессию   
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
  forenter();
 
 $userstable="fototabl";
- 
-   
+
+
 
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);//переводит некоторые спецсимволы, которые могут использоваться для кода в другое обозначение
@@ -40,7 +41,7 @@ $ip=htmlspecialchars($ip);//переводит некоторые спецсим
 
 
 //функция при открытии проверяет наличие логина и совпадение парол и логина
-($login,$ip,$pdo);
+//($login,$ip,$pdo);
 
 
 
@@ -51,11 +52,11 @@ $query->execute(array($login));
 while($line=$query->fetch(PDO::FETCH_LAZY))//выводит строки пока они не кончатся в бд
 {
 //echo "<br/>";
-$v=$line[1]; 
+$v=$line[1];
 ?>
 &nbsp;<input type="radio" name=dfile[]  <?php if($line[2]=='glav'){echo "checked";}?> value="<?php echo $v ?>" />
 
-<?php 
+<?php
 $opisanie=$line[3];
 
 //echo "Описание фото: $opisanie<br/>";

@@ -30,21 +30,22 @@ overflow-x: hidden;
 padding:0;
 margin:0;
 width:25%;
-background-color:red;
+background-color:#FFFFFF;
 }
 .column2{
 padding:0;
 margin:0;
 left:25%;
 width:45%;
-background-color:blue;
+
+background-color:#FFFF00;
 }
 .column3{
 	padding:0;
 margin:0;
 right:0;
 width:30%;
-background-color:green;
+background-color:#FFFFFF;
 }
 
 .emblema{

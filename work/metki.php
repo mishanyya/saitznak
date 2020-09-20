@@ -1,26 +1,27 @@
-<?php 
-include ("../time.php");//подключить файл с функциями и постоянными переменными         
+<?php
+include "functions.php";//подключить файл с функциями и постоянными переменными
+include "general.php";//присоединить файл с общими функциями мтраниц пользователя сайта
 ?>
 
-﻿<html>	
+﻿<html>
 <head>
 <title>Сайт знакомств</title>
 <script src="ajax.js"></script>
 <script src="opisanie.js"></script>
-<link rel="stylesheet" type="text/css" href="/style.css"/>	
+<link rel="stylesheet" type="text/css" href="/style.css"/>
 </head>
 	<body>
 <a href='index.php'><img src='<?php echo EMBLEMA; ?>' class='emblemaindex'/></a>
 <?php
 
 
-    
-session_start();//инициируем сессию   
+
+session_start();//инициируем сессию
 							//для входа если есть логин и пароль
  forenter();
-	
 
-  
+
+
 $login=$_SESSION['login'];
 $login=htmlspecialchars($login);
 
@@ -29,7 +30,7 @@ $ip=htmlspecialchars($ip);
 
 
 							//функция при открытии проверяет наличие логина и совпадение парол и логина
-($login,$ip,$pdo);
+//($login,$ip,$pdo);
 
 							//поиск в БД - есть ли мой логин
 $query=$pdo->prepare("SELECT COUNT(loginp) FROM metki WHERE loginp=?");
