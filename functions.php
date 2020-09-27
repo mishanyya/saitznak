@@ -52,9 +52,11 @@ $query=$pdo->prepare("UPDATE threetimesblock SET timer=NOW(),times=0 WHERE login
 $query->execute(array($login));
 //ip пользователя
 $ip = $_SERVER['REMOTE_ADDR'];
-//обновляется ip в БД
-$query=$pdo->prepare("UPDATE lichnoe SET ipp=? WHERE loginp=?");
-$query->execute(array($ip,$login));
+//получение номера сессии и внесение его в сессию
+$_SESSION['id']=session_id();
+//обновляется ip и session_id в БД
+$query=$pdo->prepare("UPDATE lichnoe SET ipp=?,sessionid=? WHERE loginp=?");
+$query->execute(array($ip,session_id(),$login));
 //создается сессия IP
 $_SESSION['ip']=$ip;
 //создается сессия логина
@@ -97,7 +99,7 @@ function glavfoto($login,$pdo)
 {
 $folder11 = '/mainfoto/';//папка для выгрузки файлов
 $netfoto="/mainfoto/fotonet.png";
-$fotki=$pdo->prepare("SELECT COUNT(foto) FROM fototabl WHERE loginp=? AND metka='glav'");//выбор главного фото по логину и метке фото
+$fotki=$pdo->prepare("SELECT COUNT(foto) FROM fototabl WHERE loginp=? AND metka='glav'");//поис главного фото по логину и метке фото
 $fotki->execute(array($login));
 $fotki_num=$fotki->fetchColumn();
 if($fotki_num>0){
@@ -117,10 +119,36 @@ else {
 }
 
 //функция получения данных по логину
-function dataFromLogin($login,$pdo){  
-$lich=$pdo->prepare("SELECT imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,pol FROM lichnoe WHERE loginp=? LIMIT 1");
+function dataFromLogin($login,$pdo){
+$lich=$pdo->prepare("SELECT imya,region,gorod,datarozd,TIMESTAMPDIFF(YEAR, datarozd, NOW()),ipp,sessionid,pol FROM lichnoe WHERE loginp=? LIMIT 1");
 $lich->execute(array($login));
 return $lich;
+}
+
+//Функция поиска по логину номера из табл регистр с дополнит шифрованием
+//ранее была izloginanomer
+function loginencode($login,$ip){
+//из сессии логин и IP помещаются в переменные
+  $login=$_SESSION['login'];
+  $ip=$_SESSION['ip'];
+  $fortranslate=base64_encode($login.$ip.'a');//добавить лишний символ
+  return $fortranslate;
+}
+
+//Функция где номер дешифровывается
+//ранее была iznomera
+function logindecode($fortranslate){
+$fortranslate=base64_decode($fortranslate);
+$fortranslate=substr($fortranslate,0,-1);             //убрать лишний символ
+$fortranslate=htmlspecialchars($fortranslate);
+//поиск по шаблону
+//шаблон для логина
+$patternlogin = '/[a-zA-Z0-9]+[\=*]/';
+//шаблон для ip
+$patternip = '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/';
+preg_match($patternlogin, $fortranslate, $login);
+preg_match($patternip, $fortranslate, $ip);
+return array ($login[0],$ip[0]);
 }
 
 
@@ -172,33 +200,7 @@ if($skolka>0){echo"Отправьте сообщение 'reg' со своей �
 
 
 
-//Функция поиска по логину номера из табл регистр с дополнит шифрованием
-function izloginanomer($login,$pdo){
-$query=$pdo->prepare("SELECT nomp FROM polzovateli WHERE loginp=? LIMIT 1");
-$query->execute(array($login));
-while($line=$query->fetch(PDO::FETCH_LAZY))
-{
-$nom=$line->nomp;
-}
-$nomer=base64_encode($nom.'a');//добавить лишний символ
-return $nomer;
-}
 
-
-//Функция где номер дешифровывается
-
-function iznomera($moy_q,$pdo){
-$nomer=base64_decode($moy_q);
-$nomer=substr($nomer,0,-1);             //убрать лишний символ
-
-$nomer=$pdo->query("SELECT loginp FROM polzovateli WHERE nomp='$nomer' LIMIT 1");
-while($line=$nomer->fetch(PDO::FETCH_LAZY))
-{
-$moy_q=$line->loginp;
-}
-$moy_q=htmlspecialchars($moy_q);
-return $moy_q;
-}
 
 
 

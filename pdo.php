@@ -10,6 +10,7 @@ PDO::ATTR_PERSISTENT => true//постоянное подключение pdo
 
 try {//подключение и создание объекта pdo
 $pdo = new PDO($dsn, $user_name, $user_password, $opt);
+echo "PDO создан";
 } catch (PDOException $e) {
     die('Подключение не удалось: ' . $e->getMessage());
 }

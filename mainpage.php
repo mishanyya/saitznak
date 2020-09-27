@@ -9,10 +9,10 @@ include "work/general.php";//присоединить файл с общими �
 <head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
-<script src="js/ajax.js" type="text/javascript"></script>
+<script src="forajaxfilesonly/ajax.js" type="text/javascript"></script>
 <script src="js/poiskimya.js" type="text/javascript"></script>
 <script src="js/opisanie.js" type="text/javascript"></script>
-<script src="js/myslipolzovatelya.js" type="text/javascript"></script>
+<script src="forajaxfilesonly/myslipolzovatelya.js" type="text/javascript"></script>
 <script src="js/neproch_soobsh.js" type="text/javascript"></script>
 <script src="js/izlivinput.js" type="text/javascript"></script>
 <script src="js/fromblack.js" type="text/javascript"></script>
@@ -26,11 +26,14 @@ include "work/general.php";//присоединить файл с общими �
 </head>
 <body>
 
+
+
+
 <?php
 
 
 
- /*
+
 							//удаляем логин других пользователей
 unset($_SESSION['login_q']);
 
@@ -39,6 +42,7 @@ $login=$_SESSION['login'];
 $login=htmlspecialchars($login);
 $ip=$_SESSION['ip'];
 $ip=htmlspecialchars($ip);
+/*
 
 							//внесение в онлайн
 online($login,$pdo);
@@ -47,6 +51,12 @@ blocked($login,$pdo);
 */
 ?>
 
+
+<?php
+//для проверки php кода
+
+//конец блоки проверки кода
+?>
 
 <div class="column1">
 <img src='<?php echo EMBLEMA ;?>' class='rounded mx-auto d-block emblemaindex' alt="<?php echo $alt; /*показать alt для эмблемы сайта*/?>">
@@ -107,7 +117,12 @@ echo"<p><a href=".$workcatalog."/zagrf.php class='lichnoe'>Загрузить ф
 echo"<p><a href=".$workcatalog."/izobrudal.php class='lichnoe'>Мои фото</a></p>";
 echo"<p><a href=".$workcatalog."/lichnoe.php class='lichnoe'>Личные данные</a></p>";
 echo"<p><a href=".$workcatalog."/metki.php class='lichnoe'>Доступ к странице</a></p>";
+
 echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe'>Введите свое сообщение для всех</a></p>";
+
+//echo"<p><a href='#' onclick='myslipolzovatelya() ; return false;' class='lichnoe'>Введите свое сообщение для всех</a></p>";
+
+
 echo"</div>";
 
  ?>
@@ -116,6 +131,21 @@ echo"</div>";
 <div class="column2">
 <?php
 echo "<br>Отсюда дорабатывать->>><br>";
+$fortranslate=loginencode($login,$ip);
+echo "login=".$login;
+echo "<br>";
+echo "ip=".$ip;
+echo "<br>";
+echo "loginencode=".$fortranslate;
+echo "<br>";
+$logindecode=logindecode($fortranslate);
+foreach($logindecode as $value){
+echo $value;
+echo "<br>";
+}
+
+
+
 
 //проверить работу позже
 echo"<div class='neproch_soobsh'></div>";//блок непрочитанных сообщений ajax
@@ -245,7 +275,7 @@ echo"</div>";//END блок вывода фото или лозунга
 
 <div class="column3">
 <?php
-/*
+
 							//модуль выхода и показа даты
 echo"<div class='block3'>";
 echo"<a href='exit.php'>Выход</a>";
@@ -402,7 +432,18 @@ echo"<p><img src='$foto' class='imgmoi'/><a href='stdruga.php?id=$n'>$imya</a></
 }
 }
 echo"</div>";//END модуль гостей, черного списка
-*/
+
+
+
+
+
+
+
+
+
+
+
+
 ?>
 </div>
 <script>onload='neproch_soobsh()';</script>
