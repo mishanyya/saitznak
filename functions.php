@@ -77,13 +77,6 @@ exit("Пароль НЕ верен! <a href='/index.php'>Повторите по
 //Функция для разрешения входа,если есть сессии логина + IP + ID текущей сессии
 //помещается только на страницах пользователя, а не на странице входа на сайт!
 function forenter(){
-
-
-echo '<br>login='.$_SESSION['login'];
-echo '<br>ip='.$_SESSION['ip'];
-echo '<br>id='.$_SESSION['id'];
-
-
 //если не существует хотя бы что-то из сессий login,IP или сессия ID, созданная при входе не равна текущему ID, то переходим на страницу входа
 if(!isset($_SESSION['login'])||!isset($_SESSION['ip'])||($_SESSION['id']!=session_id())){
   exit("Пройдите пожалуйста для входа на сайт по этой <a href='/index.php'>Ссылке</a>");
@@ -315,6 +308,3 @@ return exit("Ваша страница временно закрыта в свя
 }
 }
 ?>
-<!--подключение стилей с сайта Bootstrap-->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

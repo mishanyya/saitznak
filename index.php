@@ -1,7 +1,12 @@
 <?php
 include "functions.php";//подключить файл с функциями и постоянными переменными
 
+echo "в файле config.php указаны login - login123 и password - 123";
 
+
+echo '<br>login='.$_SESSION['login'];
+echo '<br>ip='.$_SESSION['ip'];
+echo '<br>id='.$_SESSION['id'];
 ?>
 
 

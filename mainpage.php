@@ -13,7 +13,7 @@ include "work/general.php";//присоединить файл с общими �
 <script src="js/poiskimya.js" type="text/javascript"></script>
 <script src="js/opisanie.js" type="text/javascript"></script>
 <script src="forajaxfilesonly/myslipolzovatelya.js" type="text/javascript"></script>
-<script src="js/neproch_soobsh.js" type="text/javascript"></script>
+<script src="forajaxfilesonly/neproch_soobsh.js" type="text/javascript"></script>
 <script src="js/izlivinput.js" type="text/javascript"></script>
 <script src="js/fromblack.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="css/style.css"/>
@@ -25,8 +25,8 @@ include "work/general.php";//присоединить файл с общими �
 
 </head>
 <body>
-
-
+	<!--скрипты, запускаемые при загрузке страницы? ф-ций onload может быть несколько-->
+<script>onload=neproch_soobsh();</script>
 
 
 <?php
@@ -446,7 +446,7 @@ echo"</div>";//END модуль гостей, черного списка
 
 ?>
 </div>
-<script>onload='neproch_soobsh()';</script>
+<script>/*onload=*/alert(1112);/*neproch_soobsh();*/</script>
 <script>setInterval('neproch_soobsh()',5000);</script>
 
 
