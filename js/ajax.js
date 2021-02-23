@@ -13,18 +13,18 @@
         try
         {
              Request = new ActiveXObject("Microsoft.XMLHTTP");
-        }    
+        }
         catch (CatchException)
         {
              Request = new ActiveXObject("Msxml2.XMLHTTP");
         }
     }
- 
+
     if (!Request)
     {
         alert("Невозможно создать XMLHttpRequest");
     }
-    
+
     return Request;
 
 }
