@@ -4,6 +4,13 @@ var req = getXmlHttp();
 
 //указать блок в который будут вводиться исходные данные
 var inputData= document.getElementById('RegExpInput').value;
+
+
+//кодирование символов
+inputData = encodeURIComponent(inputData);
+
+
+
 //указать блок в который будет выводиться результат
 var outputData= document.getElementById('RegExpOutput');
 
@@ -24,4 +31,12 @@ outputData.innerHTML=req.responseText;
 
 req.open('GET', 'work1.php?inputData='+inputData, true);
 req.send(null); // отослать запрос
+
+/*req.open('POST', 'work1.php', true);//метод и файл обработки
+req.setRequestHeader('Content-type','application/x-www-form-urlencoded');//передаваемый заголовок
+req.send('inputData='+inputData); // отослать запрос с передаваемой переменной со значением
+*/
+
+
+
 }
